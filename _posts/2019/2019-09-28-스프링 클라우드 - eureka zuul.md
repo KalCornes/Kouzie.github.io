@@ -81,9 +81,6 @@ eureka.instance.metadata-map.zone=zone3
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka, http://localhost:8762/eureka
 ```
 
-이 외의 내용은 아래 url 참조
-
-> https://kouzie.github.io/spring/eureka/
 
 설정이 끝났으면 `mvn package`로 jar파일을 생성하고 아래 명령으로 서버를 3개 실행한다.   
 
@@ -193,7 +190,7 @@ public class EurekagatewayApplication {
     }
 }
 ```
-스프링 어플리케이션 어노테이션과 함께 zuul, Eureka Client 어노테이션도 같이 추가해야한다.  
+스프링 어플리케이션 어노테이션과 함께 `zuul`, `Eureka Client` 어노테이션도 같이 추가해야한다.  
 
 설정이 끝났으면 `java -jar` 명령으로 실행하며 된다. (설정파일이 하나기에 추가 속성은 없음)   
 

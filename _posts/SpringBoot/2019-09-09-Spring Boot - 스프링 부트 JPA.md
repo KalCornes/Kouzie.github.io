@@ -39,7 +39,7 @@ JPA는 이에 더해 어떤 데이터베이스이던간 똑같은 방법으로 V
 JPA는 일종의 기술로 여러 기업에서 JPA를 구현한 라이브러리를 제공하는데 Hibernate가 가장 유명하다.  
 (이외에도 EclipseLink, DataNuclues 등이 있음)
 
-JPA를 개발하려면 지존엔 아래와 같은 코드가 필요했다.  
+JPA를 개발하려면 기존엔 아래와 같은 코드가 필요했다.  
 
 
 
@@ -358,10 +358,10 @@ public interface BoardRepository extends CrudRepository<Board, Long> {
 PageRequest.of(int page, int size)
 PageRequest.of(int page, int size, Sort.Direction direction, String ..props)
 ```
-`page` - 출력할 페이지 `int`값
-`size` - 페이지당 출력할 데이터 개수
-`direction` - `ASC`, `DESC`(오름, 내림차순 지정)
-`props` - 정렬시킬 속성명(속성명들)
+`page` - 출력할 페이지 `int`값  
+`size` - 페이지당 출력할 데이터 개수  
+`direction` - `ASC`, `DESC`(오름, 내림차순 지정)  
+`props` - 정렬시킬 속성명(속성명들)  
 
 사용예  
 ```java
