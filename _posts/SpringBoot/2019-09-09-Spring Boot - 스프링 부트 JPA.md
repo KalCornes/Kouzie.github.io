@@ -339,6 +339,10 @@ count..by..
 </tbody>
 </table>
 
+> Entitiy의 칼럼 제약조건 설정은 아래 사이트 참고
+> http://www.thejavageek.com/2014/05/24/jpa-constraints/
+
+
 
 
 ### 페이징 처리, 정렬 처리 - Pageable, Sort
@@ -833,3 +837,152 @@ private List<Reply> replies;
 
 성능 문제를 해결하기 위해선 쿼리메서드를 사용하지 않고 **지연로딩과 `@Query`어노테이션을 사용해 `JOIN` JPA쿼리 작성**을 하는 방법이 있다.  
 
+## jpa 최적화
+
+### fetch and limit(page able)
+
+다음과 같이 leftJoin(fetch역할) 과 limit, offset 을 같이 사용했을때  
+```java
+QueryResults<SystemUser> queryResults = queryFactory.selectFrom(qSystemUser)
+    .leftJoin(qSystemUser.devices).fetchJoin()
+    .limit(pageable.getPageSize())
+    .offset(pageable.getOffset())
+    .where(builder)
+    .fetchResults();
+```
+
+limit는 사라진다. 페이징이 필요할땐 N+1을 해결해 준다 하여도 함부로 leftJoin을 사용하지 말자 태이블 전채를 select해올수 가 있다.  
+
+```sql
+select
+    systemuser0_.id as id1_40_0_,
+    
+    ...
+    devices1_.id as id1_8_0__ 
+from
+    system_user systemuser0_ 
+left outer join
+    device devices1_ 
+        on systemuser0_.id=devices1_.merchant_id 
+where
+    systemuser0_.system_role_id=?
+```
+
+n+1을 막으면서 `fetJoin`을 사용할 수 있는 방법은 없다.  
+
+또한 `leftJoin`을 사용하면 `OneToMany`에 해당하는 그룹화 작업도 진행해야 하는데 하기 싫을것이다. 
+
+```java
+QueryResults<SystemUser> queryResults = queryFactory.selectFrom(qSystemUser)
+    .fetchJoin()
+    .limit(pageable.getPageSize())
+    .offset(pageable.getOffset())
+    .where(builder)
+    .fetchResults();
+```
+
+그냥 `lazy`로딩 쓰자! 방법이 없다.  
+
+물론 `OneToMany`가 아닌 `OneToOne` 혹은 `ManyToOne`의 경우 leftJoin을 사용해서 쿼리해도 된다!(그룹화 필요 x)
+
+뭐 OneToMany인 상황은 그렇다 치고 `OneToOne`, `ManyToOne`인 객체를 leftjoin하는데에도 paging못쓰면 억울하다!
+무조건 1:1 매치인데!
+
+그럴땐 orderby와 함께 사용하면 된다.  
+```java
+JPAQuery<Order> query = queryFactory.selectFrom(qOrder)
+        .leftJoin(qOrder.device).fetchJoin()
+        .leftJoin(qOrder.user).fetchJoin()
+        .leftJoin(qOrder.purchaseLog).fetchJoin();
+if (sortType.equals("create_time")) { //추가!
+    query.orderBy(qOrder.createTime.desc());
+}
+QueryResults<Order> queryResults = query.limit(pageable.getPageSize())
+        .offset(pageable.getOffset())
+        .where(builder)
+        .fetchResults();
+```
+
+
+만약 Paging을 사용하지 않고 leftJoin과 그룹화를 사용하고 싶다면 distinct()를 추천  
+
+```java
+QPurchaseLog qPurchaseLog = QPurchaseLog.purchaseLog;
+return queryFactory.selectFrom(qPurchaseLog)
+        .distinct()
+        .leftJoin(qPurchaseLog.order).fetchJoin()
+        .leftJoin(qPurchaseLog.order.orderItems).fetchJoin()
+        .leftJoin(qPurchaseLog.device).fetchJoin()
+        .where(qPurchaseLog.id.eq(purchaseId))
+        .fetchOne();
+```
+
+`@OneToOne`관계에서 `FetchMode.LAZY` 적용하기  
+
+```java
+public class Order {
+    ...
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "order")
+    private PurchaseLog purchaseLog;
+    ...
+}
+```
+
+`PurchaseLog`가 부모이고 `Order`가 자식이다. 
+
+`PurchaseLog`의 `Order`가 있을수도 있고 없을수도 있다.  
+하지만 `Order`입장에선 `PurchaseLog`가 무조건 있다.  
+
+필요한 정보는 `Order`안의 필드만 몇개 가져오면 되는데 `PurchaseLog`의 정보까지 자동 `FetchType.EAGER` 된다.
+위처럼 `fetch`속성 지정도 통하지 않는다.  
+
+원래 Hibernate 개발자는 작식이 부모에게 `@OneToOne` 관계를 갖는것을 권장하지 않는다.  
+부모를 통해 자식에게 접근하거나 자식에게도 부모를 가리키는 외래키 칼럼을 설정해주어야 한다.  
+
+또한 `@OneToOne` 관계에서 `Lazy`로딩을 사용하려면 아래 규칙을 적용해야 한다고 한다.  
+
+1. `nullable`이 허용되지 않는 `@OneToOne`관계만 허용된다.   
+2. 양방향이 아닌, 단방향 `@OneToOne`관계만 허용된다.  
+3. `@PrimaryKeyJoin`은 허용되지 않는다.  
+
+만약 자식테이블 DB구조변경(외래키 칼럼추가)이 가능하다면 위의 문제들을 `@MapsId` 로 모두 해결 가능하다.  
+부모를 가리키는 칼럼이 생성되고 `not null`조건이 자동 적용된다.  
+
+> http://wonwoo.ml/index.php/post/832
+
+불가능 하다면 그냥 별도로 부모 객체를 찾는 쿼리를 사용하던가 N+1문제를 계속 겪으며 사용해야한다.  
+
+
+## jpa 테스트
+
+```java
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Log
+public class TestJPA {
+
+    @Autowired
+    OrderItemRepository orderItemRepository;
+
+    @Test
+    void getInventoryProductCountStatus() {
+        List<OrderItem> test = orderItemRepository.findAllWithProductByOrderId(784l);
+        for (OrderItem orderItem : test) {
+            log.info(orderItem.getProduct().getName());
+            log.info(orderItem.getProduct().getImageUrl());
+            log.info(orderItem.getProduct().getCode());
+            log.info("--------------------");
+        }
+    }
+
+}
+```

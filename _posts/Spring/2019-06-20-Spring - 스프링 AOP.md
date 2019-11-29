@@ -267,7 +267,7 @@ public class LogPrintAroundAdvice implements MethodInterceptor{
 `Around Advice`을 통해 핵심기능 함수 실행문으로 들어온 후 시작 바로후, 끝나기 바로 전에 공통기능 삽입이 가능하다.  
 
 
-만약 핵심기능 실행 전, 혹은 후에 공통기능을 먼저 사입하고 싶다면,  
+만약 핵심기능 실행 전, 혹은 후에 공통기능을 먼저 삽입하고 싶다면,  
 핵심기능 수행전 매개변수, 핵심기능 수행 후 반환값을 사용해 공통 기능을 수행해야 한다면 
 
 `Before Advice` 역할을 하는 `MethodBeforeAdvice` 인터페이스를 구현,  
@@ -606,8 +606,8 @@ public class LogPrintProfiler {
 	}
 }
 ```
-코드를 보면 `	@Pointcut("execution(public * aop..*(*,*))")`을 통해 `Pointcut`을 정의하고 각 Advie설정 괄호 안에 Pointcut 식별자를 값으로 넣는다.  
-`	@After("profileTarget()")`
+코드를 보면 `@Pointcut("execution(public * aop..*(*,*))")`을 통해 `Pointcut`을 정의하고 각 Advie설정 괄호 안에 Pointcut 식별자를 값으로 넣는다.  
+`@After("profileTarget()")`
 
 `@Aspect`어노테이션을 가진 스프링 빈 객체 (`Aspect`객체)를 xml설정을 통해 생성하려면 `<aop:aspectj-autoproxy/>`태그를 추가로 적용해야 한다.  
 
