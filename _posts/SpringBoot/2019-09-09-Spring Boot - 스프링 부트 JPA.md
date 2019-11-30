@@ -41,6 +41,19 @@ JPA는 일종의 기술로 여러 기업에서 JPA를 구현한 라이브러리�
 
 JPA를 개발하려면 기존엔 아래와 같은 코드가 필요했다.  
 
+### Spring Data JPA, JPA, Hibernate
+
+3가지 라이브러리 사용시 쉽게 혼동할 만한 내용을 잘 정리해둔 블로그  
+
+> 출처: https://suhwan.dev/2019/02/24/jpa-vs-hibernate-vs-spring-data-jpa/
+
+Spring으로 ORM을 사용해 개발시 단순 Hibernate를 사용해 개발할 일이 없다. JPA만을 사용할 일은 더더욱 없다.  
+
+![springboot_jpa_1]({{ "/assets/springboot/springboot_jpa_1" | absolute_url }}){: .shadow}   
+
+즉 Hibernate, Spring Boot JPA모두 JPA를 구현한 구현체이지만 `Spring Boot JPA` 가 훨씬 편하게 사용할 수 있음을 알 수 있다.  
+
+아마 Spring과 java가 아닌 다른 프레임워크로 개발한다면 Hibernate를 사용해 개발해야 할것.  
 
 
 
@@ -985,4 +998,80 @@ public class TestJPA {
     }
 
 }
+```
+
+## EntityManager concurrency
+
+멀티 스레드 환경에서 JPA를 사용하다 보면 동시성 문제가 발생한다.  
+
+* Thread1이 `DeviceRestartLog` 생성, redis와 같은 저장소에 Device번호와 logid를 저장  
+* Thread2는 Device를 재시작하고 메세지로 실행되는 스레드이다. Device번호를 이용해 logid를 흭득 후 `DeviceRestartLog` 업데이트  
+* Thread1은 Thread2가 성공적으로 일을 수행했는지 `Thread.sleep`으로 5초 후 db에서 `findByLogid` 실행  
+
+```java
+// Thread1의 코드
+deviceRestartLog.setId(logid);
+deviceRestartLog.status(0); //0=restart 안됨
+deviceRestartLogRepository.save(deviceRestartLog);
+Thread.sleep(1000 * 5);
+deviceRestartLog = deviceRestartLogRepository.findByLogId(String.valueOf(logid));
+restartStatus = deviceRestartLog.getStatus();
+if (restartStatus = 1) {
+    logger.info("재시작 성공!");
+} else {
+    logger.error("재시작 실패!");
+}
+...
+```
+
+```java
+// Thread2의 코드, 메세지 수신시 동작 
+String device_id = message.getString("device_id");
+Long logid = RedisUtil.get(device_id)
+DeviceRestartLog deviceRestartLog = deviceRestartLogRepository.findByLogId(logid);
+deviceRestartLog.setStatus(1);
+deviceRestartLogRepository.saveAndFlush(deviceRestartLog);
+```
+
+2초후에 `Thread1`의 `findByLogId` 로 가져온 `deviceRestartLog` 가져온 값은 재시작이 성공해 DB에 이미 `Update` 되었다 하더라도 `old data`를 가져온다.  
+기존의 Entity에 할당된 캐시를 비우고 DB에서 새로 값을 가져와 채워넣어줄 필요가 있다.  
+
+이를 위해선 `EntityManager`의 `refresh` 메서드를 사용해야 하는데 불행이도 `Spring Data JPA`에선 별도의 커스터마이징을 통해 호출이 가능하다.  
+
+> https://www.javacodegeeks.com/2017/10/access-entitymanager-spring-data-jpa.html
+
+```java
+public interface DeviceRestartCustomRepository {
+    void refresh(DeviceRestartLog deviceRestartLog);
+}
+```
+
+```java
+import org.springframework.transaction.annotation.Transactional;
+
+public class DeviceRestartCustomRepositoryImpl implements DeviceRestartCustomRepository {
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    @Transactional
+    public void refresh(DeviceRestartLog deviceRestartLog) {
+        em.refresh(deviceRestartLog);
+    }
+}
+```
+
+```java
+public interface DeviceRestartLogRepository extends JpaRepository<DeviceRestartLog, Long>, QuerydslPredicateExecutor<DeviceRestartLog>, DeviceRestartCustomRepository {
+    DeviceRestartLog findByMessageId(String messageId);
+}
+```
+
+그리고 검색해온 값을 refresh해주기만 하면 끝!  
+```java
+...
+deviceRestartLog = deviceRestartLogRepository.findByMessageId(String.valueOf(msgId));
+deviceRestartLogRepository.refresh(deviceRestartLog);
+restartStatus = deviceRestartLog.getStatus();
+...
 ```
