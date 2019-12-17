@@ -771,7 +771,7 @@ ubuntu:14.04 \
 /bin/sh -c "while true; do echo hello world; sleep 2; done"
 ```
 
-![dockerswarm1]({{ "/assets/2019/dockerswarm1.png" | absolute_url }}){: .shadow}  
+![dockercompose1]({{ "/assets/2019/dockercompose1.png" | absolute_url }}){: .shadow}  
 
 
 각 `swarm-worker`와 `swarm-manager`위에서 동작하는 ubuntu서비스와 모니터링 서비스가 동작중임을 알 수 있다.  
@@ -806,7 +806,7 @@ docker service create --name myweb \
 nginx:1.10
 ```
 
-![dockerswarm2]({{ "/assets/2019/dockerswarm2.png" | absolute_url }}){: .shadow}  
+![dockercompose2]({{ "/assets/2019/dockercompose2.png" | absolute_url }}){: .shadow}  
 
 실행은 `swarm-manager`에서 했지만 실제 동작은 `worker`에서 동작된다.  
 컨테이너 수에 맞게 각각 하나씩 실행된다.  
@@ -814,7 +814,7 @@ nginx:1.10
 서비스 유지 개수를 2개에서 5개로 늘려보자.  
 `$ docker service scale myweb=5`
 
-![dockerswarm3]({{ "/assets/2019/dockerswarm3.png" | absolute_url }}){: .shadow}  
+![dockercompose3]({{ "/assets/2019/dockercompose3.png" | absolute_url }}){: .shadow}  
 
 myweb을 5개 띄우게 되면 기존 2개에 3개가 추가로 더 가동된다.  
 
@@ -831,7 +831,7 @@ docker service create --name global_myweb \
 nginx
 ```
 기존 myweb 5개에 global_myweb이 3개 추가로 실행되었다.  
-![dockerswarm4]({{ "/assets/2019/dockerswarm4.png" | absolute_url }}){: .shadow}  
+![dockercompose4]({{ "/assets/2019/dockercompose4.png" | absolute_url }}){: .shadow}  
 
 (`docker service rm global_myweb` 으로 다시 삭제하자 )
 
@@ -839,7 +839,7 @@ nginx
 위에서 이미 myweb서비스의 scale을 최소 5개로 설정하였는데 이상황에서 `swarm-worker1`을 멈춰보자.  
 
 자동으로 하나씩 추가된다.   
-![dockerswarm5]({{ "/assets/2019/dockerswarm5.png" | absolute_url }}){: .shadow}  
+![dockercompose5]({{ "/assets/2019/dockercompose5.png" | absolute_url }}){: .shadow}  
 
 ### docker swarm - Rolling update  
 
