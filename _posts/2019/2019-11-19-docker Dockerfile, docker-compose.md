@@ -126,6 +126,8 @@ nginx                     latest              540a289bab6c        4 days ago    
 `WORKDIR` | 작업 디렉터리 지정
 `ONBUILD` | 빌드완료후 실행할 명령어
 
+> `RUN, CMD, ENTRYPOINT` 차이점: https://blog.leocat.kr/notes/2017/01/08/docker-run-vs-cmd-vs-entrypoint
+
 `FROM`만 필수항목이고 나머지는 모두 없어도 된다.(나머지 속성은 모두 기본이미지에 살을 붙이는 속성)    
 
 `FROM` 명령만 적어 `Dockerfile`을 생성해보자.  

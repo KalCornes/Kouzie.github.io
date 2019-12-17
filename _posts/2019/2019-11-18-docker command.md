@@ -340,6 +340,12 @@ veth8d1fe0e Link encap:Ethernet  HWaddr 1a:99:df:2d:99:52
 
 생성된 컨테이너 만큼의 렌카드가 생성된다.  
 
+**docker 컨테이너 os 확인**
+
+grep . /etc/*-release
+
+
+
 ### docker 컨테이너 실행 속성
 
 `-it` : `interactive tty mode(표준 입출력 터미널)`의 약자이다.   
@@ -347,6 +353,9 @@ veth8d1fe0e Link encap:Ethernet  HWaddr 1a:99:df:2d:99:52
 `-p port1:port2` : port1은 `hostOS`의 port1, port2은 컨데이너의 port로 매핑한다.  
 `-d` : `--detach=true`를 줄임으로 컨테이너를 백그라운드로 실행한다. 명령이 실행되면 컨테이너 고유 id를 반환한다. 
 `-P`: 포트매핑시 host의 랜덤포트를 부여, 32768 부터 시작한다.  
+
+> -p (publish)와 Dockerfile의 expose의 차이점
+> publish의 경우 host와 container같의 포트매핑, expose의 경우 내부적인 포트노출, 같은 대역의 컨테이너들은 접근 가능   
 
 ### docker 컨테이너 확인  
 
@@ -882,11 +891,12 @@ $ sudo iptraf-ng
 
 실행시키면 다음과 같은 화면이 출력
 
-![docker7]({{ "/assets/2019/docker7.png" | absolute_url }}){: .shadow}  
+![docker7]({{ "/assets/2019/docker7.png" | absolute_url }})  
+
 
 `container -> 실제OS`(mac혹은 윈도우)로 ping 요청시 어떻게 출력되는지 확인  
 
-![docker8]({{ "/assets/2019/docker8.png" | absolute_url }}){: .shadow}  
+![docker8]({{ "/assets/2019/docker8.png" | absolute_url }})  
 
 ### memory, cpu 모니터링, 제한  
 
@@ -937,7 +947,7 @@ cpu모니터링을 `htop`을 통해 진행하자.
 
 아무것도 실행하고 있지 않을때 cpu코어 2개와 4g만큼의 메모리를 할당한 우분투의 상태  
 
-![docker9]({{ "/assets/2019/docker9.png" | absolute_url }}){: .shadow}  
+![docker9]({{ "/assets/2019/docker9.png" | absolute_url }})  
 
 
 `alicek106/stress`라는 테스트용 컨테이너를 설치해 다시한번 모니터링 해보자.  
@@ -967,11 +977,11 @@ kouzie      6446  0.0  0.0  22572   956 pts/8    S+   17:48   0:00  |           
 
 htop화면  
 
-![docker10]({{ "/assets/2019/docke10.png" | absolute_url }}){: .shadow}  
+![docker10]({{ "/assets/2019/docke10.png" | absolute_url }})  
 
 google cadviser 화면  
 
-![docker11]({{ "/assets/2019/docker11.png" | absolute_url }}){: .shadow}  
+![docker11]({{ "/assets/2019/docker11.png" | absolute_url }})  
 
 
 `--cpuset-cpus=0,3`: 0번째, 3번째 코어만 사용

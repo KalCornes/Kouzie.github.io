@@ -1075,3 +1075,9 @@ deviceRestartLogRepository.refresh(deviceRestartLog);
 restartStatus = deviceRestartLog.getStatus();
 ...
 ```
+
+### JPA Custom DTO
+
+> https://stackoverflow.com/questions/36328063/how-to-return-a-custom-object-from-a-spring-data-jpa-group-by-query
+
+기존의 Entity(db정의된)가 아닌 직접 정의한 Java Object에 JPA를 사용해 Database에서 읽어온 값을 삽입, 반환하고 싶다면 위처럼 지정
