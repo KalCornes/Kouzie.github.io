@@ -19,9 +19,9 @@ toc: true
 
 ## 클라우드 환경설정   
 
-마이크로 서비스는 점점 많아지고...
-서버마다 설정해야 하는 설정 또한 다양하지고...
-혹시라도 도중에 설정이 변경되거나 한다면 다시 빌드하고 서버 재실행...
+마이크로 서비스는 점점 많아지고...  
+서버마다 설정해야 하는 설정 또한 다양하지고...  
+혹시라도 도중에 설정이 변경되거나 한다면 다시 빌드하고 서버 재실행...  
 
 이를 한번에 타파할 수 있는것이 `cloud config`이다.  
 
@@ -77,20 +77,21 @@ public class CloudconfigApplication {
 기본적인 `cloud config`의 설정은 아래와 같다.  
 `application`이름을 `config-server`로 등록하기에 유레카 서버에 해당 이름으로 서비스가 등록된다.  
 
-```properties
+```conf
 server.port=${PORT:8889}
 spring.application.name=config-server
 
 # 기본 백앤드 프로파일을 사용하려면 "spring.profiles.active = native"로 config 서버를 시작하십시오
 # https://cloud.spring.io/spring-cloud-static/spring-cloud-config/1.1.3.RELEASE/
-#spring.profiles.active=native
+# spring.profiles.active=native
+# 우리는 백앤드 프로필이 아닌 깃으로 부터 프로필을 가져올 것이기에 주석  
 spring.cloud.config.server.git.uri=https://github.com/Kouzie/cloud-config-repo.git
 
 # public repo일 경우 아이디와 패스워드는 필요 X
 spring.cloud.config.server.git.username=${github.username}
 spring.cloud.config.server.git.password=${github.password}
 
-# config server 시작시 repo를 local에 clone해와서 설정파일 적용
+# config server 시작시 git repo를 local에 clone해와서 설정파일 적용
 spring.cloud.config.server.git.clone-on-start=true
 
 # config server역시 유레카 서버처럼 보안설정이 가능하다.
@@ -108,7 +109,7 @@ eureka.client.service-url.defaultZone=http://admin:qwer@localhost:8761/eureka/
 
 아래는 유레카 서버에 대한 `application.properties`이다.
 
-```properties
+```conf
 spring.application.name=server
 spring.profiles.active=peer1
 
@@ -163,7 +164,7 @@ server.port=8761
 이젠 일반적인 유레카 클라이언트를 실행해 `cloud config`서버에 있는 설정 파일을 가져오기만 하면 된다.  
 서버 이름은 `client`, profiles는 `zone1`로 설정할 것이기 때문에 `cloud config`에 등록되어 있는 `client-zone1.properties` 설정파일을 읽어온다.  
 
-```properties
+```conf
 spring.application.name=client
 spring.profiles.active=zone1
 
@@ -210,4 +211,5 @@ spring.cloud.config.server.monitor.github.enabled=true
 git 의 properties파일의 설정내용을 변경하면 `cloud config`에는 바로 적용이 된다. 변경된 이후부터는 변경된 내용을 REST API로 출력하며 이후 config 파일을 요청하는 클라이언트 들에게도 변경된 config 파일을 제공한다.   
 
 하지만 기존에 실행된 유레카 클라이언트는 실행된 후 계속 이전의 설정내용을 사용하는데 변경된 설정으로 재기동 없이 변경하려면 `actuator`의 `refresh`기능을 사용하면 된다.  
+
 

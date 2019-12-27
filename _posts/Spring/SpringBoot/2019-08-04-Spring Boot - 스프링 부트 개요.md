@@ -117,7 +117,7 @@ toc: true
 
 기본적으로 아래 설정을적용  
 
-```properties
+```conf
 spring.thymeleaf.cache=false
 spring.devtools.restart.enabled=true
 ```

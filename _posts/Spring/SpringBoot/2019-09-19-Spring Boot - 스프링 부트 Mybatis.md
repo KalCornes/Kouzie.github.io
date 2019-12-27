@@ -149,7 +149,7 @@ Mybatis매퍼용 파일들을 생성해야한다.
 `mybatis-config.xml`파일은 기본적으로 `src/main/resource` 디렉토리에서 찾는다.  
 이 외에 위치할 시에는 `mybatis.config-location` 속성으로 지정할 수 있다.  
 
-```properties
+```conf
 # mybatis.config-location=classpath:mybatis-config.xml #생략 가능
 mybatis.mapper-locations=classpath:mappers/**/*.xml
 ```

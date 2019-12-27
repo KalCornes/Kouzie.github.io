@@ -96,7 +96,7 @@ FadeInImage.memoryNetwork(
 
 패키지 안의  `pubspec.yaml`파일을 열어 `dependencies`부분에 아래와 같이 추가  
 
-```properties
+```conf
 ...
 ...
 dependencies:
@@ -166,7 +166,7 @@ class MyApp extends StatelessWidget {
 `FadeInImage.assetNetwork` 사용
 
 그전에 사용할 로딩용 이미지 저장 폴더를 설정
-```properties
+```conf
 ...
 flutter:
 

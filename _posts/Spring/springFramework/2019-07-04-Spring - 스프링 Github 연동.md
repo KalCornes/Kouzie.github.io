@@ -37,7 +37,7 @@ ex) 로컬 리파지토리 위치를 지정하는 파일의 경우 사용자마�
 
 그럼 다음과 같은 설정파일이 자동으로 생성된다.  
 
-```properties
+```conf
 # Created by https://www.gitignore.io/api/git,java,maven,windows,eclipse
 # Edit at https://www.gitignore.io/?templates=git,java,maven,windows,eclipse
 

@@ -42,7 +42,7 @@ toc: true
 `application-peer2.properties`  
 `application-peer3.properties`  
 
-```properties
+```conf
 # application.properties 설정 내용 - peer 공통 설정
 spring.application.name=demo_eureka_server
 spring.profiles.active=peer1
@@ -54,7 +54,7 @@ eureka.server.eviction-interval-timer-in-ms=3000
 eureka.client.instance-info-replication-interval-seconds=2
 ```
 
-```properties
+```conf
 # application-peer1.properties 설정 내용
 server.port=${PORT:8761}
 spring.profiles.active=peer1
@@ -63,7 +63,7 @@ eureka.instance.metadata-map.zone=zone1
 #eureka.client.service-url.defaultZone=http://localhost:8762/eureka, http://localhost:8763/eureka
 ```
 
-```properties
+```conf
 # application-peer2.properties 설정 내용
 server.port=${PORT:8762}
 spring.profiles.active=peer2
@@ -72,7 +72,7 @@ eureka.instance.metadata-map.zone=zone2
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka, http://localhost:8763/eureka
 ```
 
-```properties
+```conf
 # application-peer3.properties 설정 내용
 server.port=${PORT:8763}
 spring.profiles.active=peer3
@@ -93,7 +93,7 @@ java -jar -Dspring.profiles.active=peer3 target/eurekaserver-0.0.1-SNAPSHOT.jar
 ### 유레카 클라이언트 설정
 
 유레카 클라이언트도 마찬가지로 3개 생성하기 때문에 공통적인 설정은 `application.properties`에, 별도 설정은 3개의 설정파일을 생성해 각각 지정한다.  
-```properties
+```conf
 # application.properties 설정 내용
 # default profile을 zone1로 지정
 spring.profiles.active=zone1
@@ -107,17 +107,17 @@ eureka.instance.lease-expiration-duration-in-seconds=2
 eureka.client.fetchRegistry=true
 ```
 
-```properties
+```conf
 # application-zone1.properties 설정 내용
 server.port=${PORT:8081}
 spring.profiles.active=zone1
 ```
-```properties
+```conf
 # application-zone2.properties 설정 내용
 server.port=${PORT:8082}
 spring.profiles.active=zone2
 ```
-```properties
+```conf
 # application-zone3.properties 설정 내용
 server.port=${PORT:8083}
 spring.profiles.active=zone3
@@ -166,7 +166,7 @@ java -jar -Dspring.profiles.active=zone3 -Xmx192m target/eurekaclient-0.0.1-SNAP
 
 `appliaction.properties`는 아래와 같다.  
 
-```properties
+```conf
 server.port=8765
 spring.application.name=gateway-service
 zuul.prefix=/api

@@ -93,7 +93,7 @@ Removed : 더이상 사용하지 않아 영속 컨텍스트에서 쫓겨난 상�
 ![springboot1_0]({{ "/assets/springboot/springboot1_0.png" | absolute_url }}){: .shadow}   
 
 위의 라이브러리를 추가했다면 DB연동을 위한 Datasource설정을 진행한다.  
-```properties
+```conf
 # DB연결 과정
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.url=jdbc:mysql://localhost:3306/jpa_ex?useSSL=false
