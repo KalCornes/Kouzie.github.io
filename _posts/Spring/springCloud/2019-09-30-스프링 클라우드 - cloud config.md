@@ -211,5 +211,3 @@ spring.cloud.config.server.monitor.github.enabled=true
 git 의 properties파일의 설정내용을 변경하면 `cloud config`에는 바로 적용이 된다. 변경된 이후부터는 변경된 내용을 REST API로 출력하며 이후 config 파일을 요청하는 클라이언트 들에게도 변경된 config 파일을 제공한다.   
 
 하지만 기존에 실행된 유레카 클라이언트는 실행된 후 계속 이전의 설정내용을 사용하는데 변경된 설정으로 재기동 없이 변경하려면 `actuator`의 `refresh`기능을 사용하면 된다.  
-
-
