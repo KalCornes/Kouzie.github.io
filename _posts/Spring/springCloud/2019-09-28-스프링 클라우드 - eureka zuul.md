@@ -169,11 +169,19 @@ java -jar -Dspring.profiles.active=zone3 -Xmx192m target/eurekaclient-0.0.1-SNAP
 ```conf
 server.port=8765
 spring.application.name=gateway-service
-zuul.prefix=/api
-zuul.routes.client.path=/client/**
-# 유레카에 등록되어있는 클라이언트 아이
-zuul.routes.client.service-id=demo_eureka_client
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+
+# 게이트웨이는 eureka server에 노출될 필요가 없다.  
+eureka.client.register-with-eureka=false
+
+# 접두사 추가
+zuul.prefix=/api 
+
+# 유레카에 등록되어있는 서비스 아이디
+zuul.routes.demo-client.path=/client/**
+zuul.routes.demo-client.service-id=demo_eureka_client
+
+# 서버에 demo_eureka_client로 등록되어있는 서비스의 id를 
 ```
 
 `zuul.routes`속성을 통해 `http://localhost:8765/api/client/...`을 요청하면 3개중 첫번째 유레카 서버에 등록되어 있는 서비스중 id가 `demo_eureka_client` 인 것을 찾아 리다이렉트한다.  
@@ -204,3 +212,75 @@ public class EurekagatewayApplication {
 
 ![eureka_zuul2]({{ "/assets/2019/eureka_zuul2.gif" | absolute_url }}){: .shadow}  
 
+#### 서비스 라우팅 옵션
+
+참고로 `zuul.routes.demo-client`속성을 통해 path와 service를 유레카 서버로부터 찾아내었는데  
+별도설정 없이도 자동으로 `localhost:8765/api/demo_eureka_client/**`형식으로 route경로가 등록된다.  
+
+게이트웨이에 노출되면 안되는 서비스가 있을경우 아래처럼 제외설정을 적용
+
+`zuul.ignoredServices='custom-service'` , `zuul.ignoredServices='*'`(모든 서비스 무시)
+
+등록된 유레카 path를 바꾸고 싶다면 
+```conf
+zuul.routes.order-service.path=/order/**
+zuul.routes.account-service.path=/account/**
+zuul.routes.customer-service.path=/customer/**
+zuul.routes.product-service.path=/product/**
+```
+
+위에설정처럼 서비스명을 등록후에 path를 지정해도 상관 없다.  
+```conf
+zuul.routes.demo-client.service-id=demo_eureka_client
+zuul.routes.demo-client.path=/client/**
+```
+
+`zuul.routes.<serviceId>.stripPrefix`: false인 경우 uri를 모두 보내며, true인 경우에는 matching된 값을 제외하고 보낸다  
+`zuul.routes.product-service.path=/product/**` 상황에서 `/product/findById/1` 이라는 url요청시 `stripPrefix`가 false일 경우 `product-service`에 `/product/findById/1`전체를 보내고  
+true일 경우 `/product`는 제외한 `/findById/1`만 보내진다.  
+
+
+`actuator`를 추가하고 `management.endpoints.web.exposure.include=*` 속성을 더해 route하는 api목록을 `/actuator/routes`에서 확인해보자.  
+
+```json
+{
+    "/api/order/**": "order-service",
+    "/api/customer/**": "customer-service",
+    "/api/account/**": "account-service",
+    "/api/product/**": "product-service"
+}
+```
+기타 설정까지 자세히 보고 싶다면 `/actuator/routes/details` 호출  
+
+#### zuul 필터
+
+`/actuator/filter`
+
+```json
+{
+    "error": [{
+        "class": "org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter",
+        "order": 0,
+        "disabled": false,
+        "static": true
+    }],
+    "post": [{
+        "class": "org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter",
+        "order": 1000,
+        "disabled": false,
+        "static": true
+    }],
+    "pre": [{
+        "class": "org.springframework.cloud.netflix.zuul.filters.pre.DebugFilter",
+        "order": 1,
+        "disabled": false,
+        "static": true
+    },...],
+    "route": [{
+        "class": "org.springframework.cloud.netflix.zuul.filters.route.SimpleHostRoutingFilter",
+        "order": 100,
+        "disabled": false,
+        "static": true
+    },...]
+}
+```
