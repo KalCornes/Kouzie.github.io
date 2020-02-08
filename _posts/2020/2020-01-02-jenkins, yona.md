@@ -192,5 +192,8 @@ nginx와 ssl을 같이 사용하기위해 yona의 url prefix(context path)를 �
 `JENKINS_OPTS="--prefix=/jenkins"`
 
 이미 젠킨스 컨테이너를 환경변수 없이 만들었다면 https://github.com/moby/moby/issues/8838 참고
-sudo service docker stop
-/var/lib/docker/containers/conainerID/config.json 파일에서 Env 배열에 문자열을 추가한 후 다시 서버를 실행하면 된다.  
+`sudo service docker stop`
+`/var/lib/docker/containers/conainerID/config.json` 파일에서 `Env` 배열에 문자열을 추가한 후 다시 서버를 실행하면 된다.  
+
+아니면 지우고 컨테이너를 아래와 같이 다시 생성
+`docker run -d -p 8080:8080 -p 50000:50000 -e "JENKINS_OPTS=--prefix=/jenkins" --name jenkins jenkins/jenkins`
