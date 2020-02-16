@@ -23,7 +23,7 @@ toc: true
 
 일일이 google 공유 document를 생성하여 협업하는 경우도 있지만 프로젝트가 커질수로 관리는 어려워지고 최신화 및 동기화가 힘들어진다.  
 
-Spring Rest doc를 사용하면 이런 문제점을 일부 해결해준다.  
+`Spring Rest doc`를 사용하면 이런 문제점을 일부 해결해준다.  
 
 spring-project 깃허브에서 제공하는 샘플 프로젝트로 간단히 테스트해보자.  
 
@@ -188,3 +188,36 @@ public class ProductControllerTest {
 테스트 코드를 실행하고 `target/generated-snippets`에 `rest-doc`가 생성 되는지 확인  
 
 ![restdoc1]({{ "/assets/2020/restdoc1.png" | absolute_url }}){: .shadow}  
+
+작성된 파일을 하나의 파일로 합칠수 있도록 `src/main/asciidoc` 아래에 생성된 restdoc들의 위치를 참조하는 문서 작성  
+`product-controller.adoc` 이름으로 하나 생성하였다.   
+
+```
+= ProductController
+
+== getProduct
+
+include::{snippets}/product-controller-test/get-product/path-parameters.adoc[]
+include::{snippets}/product-controller-test/get-product/http-response.adoc[]
+include::{snippets}/product-controller-test/get-product/response-fields.adoc[]
+include::{snippets}/product-controller-test/get-product/curl-request.adoc[]
+include::{snippets}/product-controller-test/get-product/http-request.adoc[]
+include::{snippets}/product-controller-test/get-product/httpie-request.adoc[]
+include::{snippets}/product-controller-test/get-product/request-body.adoc[]
+include::{snippets}/product-controller-test/get-product/response-body.adoc[]
+```
+
+생성하후 아래 maven명령 실행 
+
+
+```
+mvn clean
+mvn install
+```
+
+테스트가 진행된후 `rest doc`가 생성되고 `src/main/asciidoc` 에 생성해둔 파일양식대로 하나의 API 문서를 `pom.xml`에 설정해둔 위치에 생성하는지 확인.   
+
+이후 jar파일을 실행하던 개발툴을 통해 서버 실행 후 `localhost:8080/docs/product-controller.html` 요청
+
+아래처럼 출력되는지 확인  
+![restdoc2]({{ "/assets/2020/restdoc2.png" | absolute_url }}){: .shadow}  
