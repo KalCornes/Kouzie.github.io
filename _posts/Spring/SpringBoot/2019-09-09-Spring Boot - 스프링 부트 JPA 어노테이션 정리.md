@@ -228,6 +228,7 @@ DB의 `ON DELETE CASCADE, UPDATE`
 ### mappedBy
 
 양방향 관계 설정시 관계의 주체가 되는 쪽에서 정의. 자식테이블의 외래키를 지정한다.  
+
 ```java
 public class Board {
     @Id

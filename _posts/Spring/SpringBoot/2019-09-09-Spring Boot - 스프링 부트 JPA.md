@@ -778,7 +778,134 @@ public class Reply {
 만약 테이블을 만들어야 하고 그에대한 설정을 하고 싶다면 `@JoinTable` 어노테이션 사용  
 > http://wonwoo.ml/index.php/post/834
 
+### @JoinColumn, @OneToMany @OneToOne의 mappedBy속성 차이  
 
+둘다 연관관계를 설정할 때 사용하는 어노테이션이다.  
+
+`mappedBy` 속성은 사용하는 쪽이 무조건 주인 관계의 객체이다.  
+
+```java
+@Entity
+public class WebBoard {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long bno;
+
+    private String title;
+    private String content;
+
+    ...
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+    private List<WebReply> replies;
+}
+
+@Entity
+public class WebReply {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long rno;
+
+    private String replyText;
+    
+    ...
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private WebBoard board;
+}
+```
+
+게시글과 댓글을 확인하면 게시글이 주인이며 게시글 테이블엔 답글의 연관관계 형성을 위한 외래키 속성이 들어가지 않는다.  
+
+만약 게시글당 하나의 댓글만 달 수 있는 `@OneToOne` 관계라 하더라도 마찬가지이다.  
+
+```java
+@Entity
+public class WebBoard {
+    ...
+    ...
+    @OneToOne(mappedBy = "board")
+    private WebReply reply;
+}
+```
+
+반면 @JoinColumn 은 `@ManyToOne`, `@OneToMany` 에 따라 주종 관계가 달라질 수 있다.  
+
+```java
+@Entity
+public class Member {
+    @Id
+    private String uid;
+    private String upw;
+
+    ...
+
+    @OneToMany
+    @JoinColumn(name = "member")
+    List<MemberRole> roles;
+}
+
+@Entity
+public class MemberRole {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long fno;
+
+    private String roleName;
+}
+```
+`Member`와 `Member`의 권한을 나타낼 `MemberRole` 테이블이다.  
+당연히 Member가 주인이며 `MemberRole`은 `Member`테이블과 연관관계를 맺기위한 외래키 속성을 가지고 있어야 한다.  
+
+이 왜래키 속성을 `MemberRole`에 별도로 지정하진 않았지만 `Member`의 `@JoinColumn`으로 자동 생성된다.  
+즉 `Member`의 `@JoinColumn`이 `MemberRole`의 `member`외래키 속성을 생성한다.  
+
+반면애 아래와 같이 설정도 가능하다.  
+테이블을 모두 지우고 다시 설정해보자.  
+
+```java
+@Entity
+public class Member {
+    @Id
+    private String uid;
+    private String upw;
+
+    ...
+
+    @OneToMany(mappedBy = "member")
+    List<MemberRole> roles;
+}
+
+@Entity
+public class MemberRole {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long fno;
+
+    private String roleName;
+    
+    @ManyToOne
+    @JoinColumn(name = "member")
+    Member member;
+}
+```
+
+`MemberRole`에 `@JoinColumn(name = "member")`을 통해 `Member`테이블과 연관관계를 설정했지만  
+주인은 여전히 `Member`이며 `MemberRole`에 외래키 속성이 생성된다.
+
+즉 `@OneToMany`에서의 `@JoinColumn`은 **주인테이블에서** 종속테이블의 외래키 칼럼을 생성할 때 쓰이고  
+`@ManyToOne`에서의 `@JoinColumn`은 **종속테이블에서** 주인테이블의 연관관계 설정을 위해 외래키 칼럼 생성할 때 쓰인다.  
+
+또 `mappedBy`는 주인테이블에서 종속테이블을 참조하고 싶을때만 쓰이기에 **주인테이블에서만** 쓰인다.  
+
+개인적으로 종속테이블에서 연관관계 설정을 직접 생성하는 `@ManyToOne`에서의 `@JoinColumn`을 많이 사용한다.  
+그래야 단독으로 CRUD 작업이 가능하다.  
+
+게시글에 댓글을 추가할 경우 게시글을 검색한 후 리스트에 댓글을 추가한 뒤 다시 게시글을 저장하는 방법보단 바로 댓글을 저장하는게 수월하다, 
+
+또한 `@Query` 어노테이션이나 `querydsl`을 통해 `SELECT` 할때에도 주인테이블의 조건적용이 수월하다.  
+
+단점은 `@ManyToOne` 이나 `@OneToOne`의 검색조건이 `EAGER` 고정이기 때문에 `n+1` 문제가 쉽게 발생한다.  
 
 
 ### 양방향 참조관계 주의사항
