@@ -28,7 +28,8 @@ toc: true
 구글에서 여러가지 언어로 사용할 수 있도록 라이브러리를 만들어 주었다.   
 지원 언어: `C++`, `C#`, `Dart`, `Go`, `Java`, `Python` 등
 
-> https://developers.google.com/protocol-buffers
+> minapage: https://developers.google.com/protocol-buffers  
+> tutorial: https://grpc.io/docs/tutorials/basic/python/  
 
 ### protoc - proto파일 컴파일러
 
@@ -44,7 +45,7 @@ toc: true
 
 맥의 경우 `protoc-3.10.0-osx-x86_64.zip`를 설치하면 되겠다. (2019.10.16)  
 
-`.proto`확장자를 파일을 생성하고 grpc문법에 맞는 데이터 구조를 정의하자.  
+`.proto`확장자를 파일을 생성하고 grpc문법에 맞는 데이터 구조를 정의.  
 
 ```js
 syntax = "proto3";
@@ -76,7 +77,9 @@ message AddressBook {
 
 정의가 끝났으면 다운받은 디렉터리로 이동해서 다음 명령어로 `.proto`파일을 컴파일  
 
-`~/protoc-3.10.0-osx-x86_64 $ bin/protoc --proto_path=src --java_out=build/gen src/AddressBookProtos.proto`  
+```
+~/protoc-3.10.0-osx-x86_64 $ bin/protoc --proto_path=src --java_out=build/gen src/AddressBookProtos.proto
+```  
 
 생성 위치로 가보면 생각보다 많은 양의 java소스파일이 생성되어있다.  
 
@@ -86,15 +89,21 @@ message AddressBook {
 `Person.java`  
 `PersonOrBuilder.java`  
 
-해당 객체의 데이터를 스트림으로 정방향/역방향 변환하는 java코드가 자동 `protoc`컴파이러를 통해 자동 생성된다.  
+해당 객체의 데이터를 스트림으로 정방향/역방향 변환하는 java코드가 자동 `protoc` 컴파일러를 통해 자동 생성된다.  
 
 이제 `grpc`프로토콜을 사용해 해당 객체를 송/수신 하기만 하면 된다.  
+
+> 문제가 하나 있는데 단순 객체만 생성하지 grpc 서비스 객체를 생성하지 못한다는 것, 서비스 객체를 생성하기 위해선 `protoc-gen-grpc-java` 이라는 플러그인을 설치해야 한다.  
+> https://github.com/grpc/grpc-java/tree/master/compiler 참고, 플러그인을 설치하고 `--plugin=protoc-gen-grpc-java=`, `--grpc-java_out=` 을 설정해야 한다.  
+> https://stackoverflow.com/questions/31029675/protoc-not-generating-service-stub-files  
+> 하지만 위 방식대로 해도 바로 실행가능한 정상코드가 나오지 않기에 튜토리얼의 패키지 관리자를 통해 grpc 구현 클래스들을 생성하도록 하자.  
+
 
 ## grpc
 
 ![grpc1]({{ "/assets/2019/grpc1.png" | absolute_url }}){: .shadow}  
 
-위에서 protoc를 사용해 생성한 java 코드를 사용해 `grpc`라이브러를 사용해 데이터를 전송하기만 하면 된다.  
+위에서 `protoc`를 사용해 생성한 java 코드를 사용해 `grpc`라이브러를 사용해 데이터를 전송하기만 하면 된다.  
 
 공식 홈페이지의 샘플코드를 사용해 어떤식으로 grpc가 사용되는지 알아보자.   
 > https://grpc.io/docs/tutorials/basic/java/   
