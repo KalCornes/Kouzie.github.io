@@ -28,8 +28,8 @@ toc: true
 구글에서 여러가지 언어로 사용할 수 있도록 라이브러리를 만들어 주었다.   
 지원 언어: `C++`, `C#`, `Dart`, `Go`, `Java`, `Python` 등
 
-> minapage: https://developers.google.com/protocol-buffers  
-> tutorial: https://grpc.io/docs/tutorials/basic/python/  
+> mainpage: https://developers.google.com/protocol-buffers  
+> tutorial: https://grpc.io/docs/tutorials/basic/java/  
 
 ### protoc - proto파일 컴파일러
 
@@ -94,9 +94,9 @@ message AddressBook {
 이제 `grpc`프로토콜을 사용해 해당 객체를 송/수신 하기만 하면 된다.  
 
 > 문제가 하나 있는데 단순 객체만 생성하지 grpc 서비스 객체를 생성하지 못한다는 것, 서비스 객체를 생성하기 위해선 `protoc-gen-grpc-java` 이라는 플러그인을 설치해야 한다.  
-> https://github.com/grpc/grpc-java/tree/master/compiler 참고, 플러그인을 설치하고 `--plugin=protoc-gen-grpc-java=`, `--grpc-java_out=` 을 설정해야 한다.  
-> https://stackoverflow.com/questions/31029675/protoc-not-generating-service-stub-files  
-> 하지만 위 방식대로 해도 바로 실행가능한 정상코드가 나오지 않기에 튜토리얼의 패키지 관리자를 통해 grpc 구현 클래스들을 생성하도록 하자.  
+플러그인을 설치하고 `--plugin=protoc-gen-grpc-java=`, `--grpc-java_out=` 을 설정해야 한다. https://github.com/grpc/grpc-java/tree/master/compiler 참고  
+https://stackoverflow.com/questions/31029675/protoc-not-generating-service-stub-files  
+하지만 위 방식대로 해도 바로 실행가능한 정상코드가 나오지 않기에 튜토리얼의 패키지 관리자를 통해 grpc 구현 클래스들을 생성하도록 하자.  
 
 
 ## grpc
