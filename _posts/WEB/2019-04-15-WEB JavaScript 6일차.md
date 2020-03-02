@@ -260,6 +260,7 @@ person.print = function() {
 `this`키워드를 사용해  생성된 객체에 프로퍼티를 정의하고 초기화한다.  
 
 > 생성자 함수에선 맨 앞의 문자를 대문자로 쓸 것 을 권장한다.  
+
 ```js
 function Person(name, age, color) {
   this.name = name;
@@ -274,6 +275,7 @@ function Person(name, age, color) {
 var father = new Person("Hong", 30, "blue");
 var son = new Person("Kim", 10, "red");
 ```
+
 생성자 함수도 일반 함수이기 때문에 `this.name`은 `window`객체의 `name`이라는 전역변수를 정의하고 초기화 하는 문법이 되어버린다.  
 
 때문에 함수앞에 `new`키워드 를 붙여 객체를 생성하고 `this`키워드는 해당 객체의 공간을 나타낸다.  
