@@ -17,17 +17,17 @@ toc: true
 
 ---
 
-## Spring Securitu
+## Spring Security
 
 > Spring doc : https://docs.spring.io/spring-security/site/docs/5.2.3.BUILD-SNAPSHOT/reference/htmlsingle/
 
 
 이전에 `Spring Framework` 에서 시큐리티를 다룬적이 있다.  
-> https://kouzie.github.io/spring/Spring-%EC%8A%A4%ED%94%84%EB%A7%81-%EC%8B%9C%ED%81%90%EB%A6%AC%ED%8B%B0/#
+> https://kouzie.github.io/spring/Spring-스프링-시큐리티/#  
 
 스프링 부트에선 어떻게 변했는지 확인해보자.  
 
-프로젝트에 `dependency`를 하나 추가하고 config용 java파일을 하나 설정하자.  
+프로젝트에 `dependency`를 하나 추가하고 `config`용 `java`파일을 하나 설정하자.  
 ```xml
 <dependency>
   <groupId>org.springframework.boot</groupId>
