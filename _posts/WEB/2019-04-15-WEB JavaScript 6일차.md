@@ -578,8 +578,6 @@ hong.print();
 `__proto__`를 통해 만들어진 객체 또한 생성자 함수의 멤버 `prototype`객체에 접근 가능하다.  
 
 ![js14]({{ "/assets/web/js/js14.png" | absolute_url }}){: .shadow}  
-![js11]({{ "/assets/web/js/js11.png" | absolute_url }}){: .shadow}
-
 
 ### Prototype Link
 
@@ -606,7 +604,7 @@ console.log(kim.__proto__);
 
 리터럴로 생성된 `kim`객체또한 `Object()`함수를 통해 만들어진 것이기 때문에 `__proto__`는 Object의 `prototype`을 가리킨다.  
 
-아무대로 `Object()`멤버의 `prototype`객체에 정의된 함수, 변수가 우리가 정의한 `Person()`보단 많다.  
+아무래도 `Object()`멤버의 `prototype`객체에 정의된 함수, 변수가 우리가 정의한 `Person()`보단 많다.  
 
 어쨋건 `hong.print()` 형식으로 메서드를 호출할 수 있는 이유는 먼저 `print`메서드가 자신에게 있는지 탐색하고 없다면 `__proto__`에 연결된 생성자 함수의 `prototype`객체에 `print`가 정의되어 있는지 탐색하기 때문  
 
