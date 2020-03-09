@@ -51,6 +51,7 @@ $ yarn add -D babel-cli babel-preset-env babel-preset-stage-2
 ```
 
 간단한 ES2015 문법을 가진 샘플 파일 작성  
+
 ```js
 let name = 'world';
 console.log(`hello ${name}`);
@@ -203,6 +204,7 @@ $ vue add router - @vue/cli-plugin-router 설치
 또한 빌드과정이 없음으로 구형 브라우저에서 최신 ECMA스크립트를 사용할 수 없다. 
 
 Vue 프로젝트를 생성하고 어떤식으로 단일파일 컴포넌트가 구성되는지 간단히 알아보자.  
+
 ```
 $ vue create todolistapp
 ```
@@ -257,7 +259,7 @@ new Vue({
 
 **범위CSS** 를 사용하려면 `.vue` 파일 안의 `style` 태그에 `scoped` 키워드만 넣어주면 된다.  
 
-```html
+{% highlight html %}{% raw %}
 <template>
   <div class="main">{{msg}}</div>
 </template>
@@ -277,19 +279,21 @@ export default {
   background-color: yellow;
 }
 </style>
-```
+{% endraw %}{% endhighlight %}
+
 
 `.vue` 파일이 빌드되면서 `template` 내부의 태그와 매칭되는 css에 고유속성이 부여된다.  
 
-```html
+{% highlight html %}{% raw %}
 <!-- 생성된 Element -->
 <div data-v-3a3c19c6="" class="main">child2</div>
-```
+{% endraw %}{% endhighlight %}
+
 범위CSS의 단점은 CSS선택자로 속성을 사용하기에 스타일 적용 속도가 느리다. 빠른 속도를 원한다면 id, class 를 이용해 스타일 적용할것  
 
 또한 부모컴포넌트에 적용된 CSS는 자식 컴포넌트에서도 영향을 끼친다.  
 
-```vue
+{% highlight html %}{% raw %}
 <template>
   <div class="main">
     {{msg}}
@@ -297,20 +301,22 @@ export default {
     {{msg}}
   </div>
 </template>
-```
+{% endraw %}{% endhighlight %}
+
 위처럼 자식 컴포넌트를 탬플릿에 적용할때 부모의 속성값을 전이한다.  
 
 결과적으로 아래처럼 2개의 속성을 모두 가지게 된다.  
-```html
+
+{% highlight html %}{% raw %}
 <div data-v-0b9bd83c="" data-v-3a2e0245="" class="test">
   <h3 data-v-0b9bd83c="">Child's child</h3>
 </div>
-```
+{% endraw %}{% endhighlight %}
 
 **CSS모듈**은 `<style module>` 키워드를 사용한다.  
 마치 css 스타일을 객채처럼 사용할 수 있도록 설정.  
 
-```html
+{% highlight html %}{% raw %}
 <template>
   <div :class="$style.hand">CSS Module을 적용한 버튼</div>
 </template>
@@ -330,11 +336,11 @@ export default {
   color: yellow;
 }
 </style>
-```
+{% endraw %}{% endhighlight %}
 
 아래처럼 변환된다.  
 
-```html
+{% highlight html %}{% raw %}
 <style>
 .Module1_hand_1l2s2 {
     cursor: pointer;
@@ -344,14 +350,14 @@ export default {
 </style>
 ...
 <div class="Module1_hand_1l2s2">CSS Module을 적용한 버튼</div>
-```
+{% endraw %}{% endhighlight %}
 
 클래스명을 컴포넌트명과 결합시켜 변환시켜버리기에 중복될 가능성이 없다.  
 
 만약 사용해야할 CSS 객체가 여러개라면 아래처럼 배열형식으로 다중적용가능
 
-```html
+{% highlight html %}{% raw %}
 <template>
   <div :class="[$style.hand. $style.foot]">CSS Module을 적용한 버튼</div>
 </template>
-```
+{% endraw %}{% endhighlight %}
