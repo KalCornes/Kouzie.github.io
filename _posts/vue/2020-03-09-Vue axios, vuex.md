@@ -210,9 +210,9 @@ $ yarn add vuex
 
 `Vuex` 는 이중 `Action`, `Mutation`, `State` 를 관리.  
 
-### Store
+## Vuex - Store (저장소)
 
-중앙에서 관리할 `State`들이 저장될 `Store` 객체 정의  
+중앙 관리할 `State`(데이터)들이 저장될 `Store`(저장소) 객체 정의  
 
 ```js
 // /store/index.js
@@ -240,16 +240,8 @@ const store = new Vuex.Store({
 > `Vue.use(Vuex)`: `Vuex` 를 전역에서 사용할 수 있도록 설정   
 모든 컴포넌트의 `State` 를 `Store` 에서 관리할 필요는 없다. 여러 컴포넌트가 공유할 데이터만 저장하면 된다.  
 
-`mutations`(변이) 속성에는 공유데이터 `state`를 변경시키는 메서드를 정의한다.  
-2개의 매개변수, 공유데이터인 `state` 와 변경시 필요한 정보 `payload` 가 필요하다.  
+> `state`, `mutataions` 외에도 `actions`, `getters`, `module` 속성이 있는데 하나씩 알아보자.  
 
-
-나중에 각 컴포넌트에서 공용데이터 `state`변경을 위해 `mutaion`에 정의된 함수를 호출하는데 아래와 같은 방식을 사용한다.   
-
-```js
-this.$store.commit(Constant.DONE_TOGLE, { id: id });
-this.$store.commit(Constant.DELETE_TODO, { id: id });
-```
 
 `this.$store` 형식으로 각 컴포넌트에서 `store` 접근 지원을 위해 뷰 인스턴스 생성시 아래처럼 설정  
 
@@ -263,96 +255,46 @@ new Vue({
 
 > `Vuex` 를 사용하면 단순 공유 데이터 생성뿐 아니라 상태 자체를 저장할 수 있기 때문에 크롬 디버깅창에서 확인 가능하다.  
 
-### 헬퍼 메서드 (컴포넌트 바인딩 헬퍼 메서드)
+### Mutation
 
-공유데이터 `store.state` 를 변경하기 위한 `store.mutations` 속성에 각종 메서드들을 정의하고  
-`commit` 함수를 사용해 호출하였다.  
+`mutations`(변이) 속성에는 공유데이터 `state`를 **변경시키는 메서드를 정의**한다.  
+2개의 매개변수, 공유데이터인 `state` 와 변경시 필요한 정보 `payload` 가 필요하다.  
 
-헬퍼메서드를 사용하면 `mutations` 에 정의된 메서드를 바인딩해서 사용할 수 있다.  
-
-#### mapState
-
-지금까지 `store.state` 를 `data`, `computed` 객체 속성과 매칭시키기 위해 `function...return` 을 사용해왔다.  
-
-`mapState` 메서드를 사용하면 단축 가능하다.  
-
-먼저  `vuex` 에서 `mapState` `import`
+나중에 각 컴포넌트에서 공용데이터 `state`변경을 위해 `mutaion`에 정의된 함수를 호출하는데 아래와 같은 방식을 사용한다.   
 
 ```js
-import {mapState} from 'vuex';
-```
-
-
-```js
-computed: {
-  todolist: function() {
-    return this.$store.state.todolist;
+const store = new Vuex.Store({
+  state: {
+    ...
+    ...
+  },
+  mutations: {
+    addTodo: (state, payload) => {
+      ...
+      ...
+    },
+    deleteTodo: (state, payload) => {
+      ...
+      ...
+    }
+    ...
+    ...
   }
-}
-```
-
-기존의 위의 코드를 아래처럼 변경  
-
-```js
-computed: mapState(['todolist'])
-```
-
-자동으로 `computed` 객체내부의 속성명이 `todolist`로 고정되기에 속성명을 변경하고 싶다면 아래와 같이 설정  
-
-```js
-computed: mapState({
-  todolist2: (state) => state.todolist
 })
 ```
 
-#### mapMutations
-
-
-먼저  `vuex` 에서 `mapState`이어 `mapMutations`도 `import`
-
 ```js
-import {mapState, mapMutations} from 'vuex';
+this.$store.commit(Constant.DONE_TOGLE, { id: id });
+this.$store.commit(Constant.DELETE_TODO, { id: id });
 ```
 
-`store.mutations` 속성에 정의된 메서드를 호출하기 위해 아래처럼 `commit` 를 사용해왔다.  
+`commit` 은 db에서 흔히 사용되는 명령어로 변경되는 상태값을 실제 데이터 저장소에 동기화 시키는 역할을 한다.  
 
-```js
-methods: {
-  deleteTodo: function(id) {
-    this.$store.commit(Constant.DELETE_TODO, { id: id });
-  }
-}
-```
-`mapMutations` 함수를 사용하면 단축 가능하다.  
+`mutations` 도 똑같이 변경할 데이터, 변경을 유발하는 데이터 `payload` 를 `state`를 변화시키는 작업을 **동기적으로** 수행한다  
 
-> `Constant.DELETE_TODO` 는 `deleteTodo` 문자열이 정의되어 있다.  
+> Vuex에선 상태관리를 위해 모든 변이에 대해 상태의 "이전" 및 "이후" 스냅 샷을 캡처 해야하기 때문에 콜백형식의 비동기 처리방식은 변이에 적용 불가능하다.  
 
-```js
-methods: {
-  ...mapMutations([Constant.DELETE_TODO])
-}
-```
-
-어차피 `commit` 의 첫번째 매개변수는 `mutations` 속성의 이름, 두번째 매개변수는 전달할 매개변수가 항상 고정적으로 들어간다.  
-
-이런 지루한 과정을 `mapMutations` 함수로 생략해버린는 것.  
-`deleteTodo` 메서드를 사용하면 `mutations`속성에 정의된 `deleteTodo` 가 호출된다.   
-
-`mapState`와 마찬가지로 메서드 명이 `mapMutations` 에서 사용한 문자열로 고정되기에 변경하고 싶다면 배열이 아닌 객체형식으로 전달해야 함
-
-```js
-methods: {
-  ...mapMutations({
-    removeTodo: Constant.DELETE_TODO
-  })
-}
-```
-
-`mapState`, `mapMutations` 모두 사용법만 조금 다를뿐 기능은 동일하다.  
-
-
-
-#### mapGetter
+### Getter  
 
 ```js
 computed: mapState(['todolist'])
@@ -360,58 +302,38 @@ computed: mapState(['todolist'])
 
 `mapState`를 쓰면 `store` 에 저장된 `state` 안의 데이터를 가져올 수 있다.  
 
-만약 단순히 state 안의 데이터를 가져오는 것이 아닌  
-`filter`나 `map` 과같은 `state` 안의 특정 데이터만 연산을 통해 가져오고 싶다면  
+만약 단순히 `state` 안의 데이터를 가져오는 것이 아닌  
+`filter`나 `map` 과같은 `state` 안의 **특정 데이터만** 연산을 통해 가져오고 싶다면  
 
-모든 컴포넌트에 해당 연산과정을 작성해도 되지만  
-모두 같은 로직의 연산과정을 통해 데이터를 가져온다면 `mapGetter`용 메서드를 통해 `Store` 객체에 특정 데이터만 반환하는 메서드를 작성하는 것이 효율적이다.  
+모든 컴포넌트에 우선 `state`를 가져와 원하는 데이터를 얻기위한 해당 연산과정을 작성해도 되지만  
+
+둘 이상의 컴포넌트가 같은 로직의 연산과정을 통해 데이터를 가져와야 한다면 `getters` 를 통해 `Store` 객체에 특정 데이터만 반환해주는 메서드를 작성하는 것이 효율적이다.   
 
 ```js
-import Vue from 'vue';
-import Vuex from 'vuex';
-import Constant from '../Constant.js';
-
-Vue.use(Vuex);
-
 const store = new Vuex.Store({
-    state: {
-      currentRegion: "all",
-      countries : [{ no:1,  name : "미국", capital : "워싱턴DC", region:"america" },...]
-    },
-    getters : {
-        countriesByRegion(state) {
-            if (state.currentRegion == "all") {
-                return state.countries;
-            } else {
-                return state.countries.filter(c => c.region==state.currentRegion);
-            }
-        }
-    }, 
-    mutations: {
-        [Constant.CHANGE_REGION] : (state, payload) => {
-            state.currentRegion = payload.region;
-        }
+  state: {
+    todos: [
+      { id: 1, text: '...', done: true },
+      { id: 2, text: '...', done: false }
+    ]
+  },
+  getters: {
+    doneTodos: (state, getters) => {
+      return state.todos.filter(todo => todo.done)
     }
+  }
 })
-
-export default store;
 ```
 
-`getters` 속성에 특정 데이터만 반환하는 메서드를 정의  
-
-`state.currentRegion` 값에 따라 반환되는 `state.countries` 값이 `filter` 를 통해 달라진다.  
-
-`getters` 에 정의한 `countriesByRegion` 메서드로 반환된 데이터를 뷰 컴포넌트에서 등록하려면 아래 처럼 설정한다.  
+또한 두번째 매개변수를 사용해 `getters` 에 정의된 다른 메서드도 사용 가능하다.  
 
 ```js
-import { mapGetters } from "vuex";
-export default {
-  name: "CountryList",
-  computed: mapGetters({countries: "countriesByRegion"})
-};
+computed: {
+  todolist: function() {
+    return this.$store.getters.doneTodos;
+  }
+}
 ```
-
-`countries`를 사용하는 모든 컴포넌트에서 `mapState(['countries'])` 로 데이터를 가져와 이후 `computed` 안에서 여러 연산을 진행해도 되지만 자주 사용될 거라면 `mapGetters` 를 사용하는 것이 중복코드가 덜 발생된다.  
 
 
 ### Action
@@ -464,6 +386,160 @@ methods: {
 
 하나의 액션을 호출하고 해당 액션 안에서 또다른 액션, 변이를 추가 호출하거나 여러개의 액션, 변이를 추가 호출할 수 있다.
 
+### 헬퍼 메서드 (컴포넌트 바인딩 헬퍼 메서드)
+
+각 컴포넌트들은 공유데이터 `store.state` 를 바로 사용하거나,  
+때에 따라선 `store.getters` 를 사용해 필터링해 가져온다.    
+
+공유데이터 `store.state` 를 변경하기 위해 `store.mutations` 속성에 각종 메서드들을 정의하고  
+`commit` 함수를 사용해 호출한다.  
+
+정의된 `mutations` 내부 메서드들은 `actions` 에서 호출된다.
+
+![vue16]({{ "/assets/vue/vue16.png" | absolute_url }}){: .shadow}   
+
+최종적으로 위와 같은 형식을 갖춘다.  
+
+각 컴포넌트에서 `this.$store` 를 통해 `state`, `mutations`, `actions`, `getter` 를 사용하는데  
+매우 반복적인 작업들이다.  
+
+헬퍼메서드를 사용하면 간단하게 `state`, `mutations`, `actions`, `getter` 를 바인딩해서 사용할 수 있다.(코드 생략)  
+
+#### mapState
+
+지금까지 `store.state` 를 `data`, `computed` 객체 속성과 매칭시키기 위해 `function...return` 을 사용해왔다.  
+
+```js
+computed: {
+  todolist: function() {
+    return this.$store.state.todolist;
+  }
+}
+```
+
+`mapState` 메서드를 사용하면 단축 가능하다.  
+
+먼저  `vuex` 에서 `mapState` `import`
+
+```js
+import {mapState} from 'vuex';
+```
+
+위의 코드를 아래처럼 변경  
+
+```js
+computed: mapState(['todolist'])
+```
+
+자동으로 `computed` 객체내부의 속성명이 `todolist`로 고정되기에 속성명을 변경하고 싶다면 아래와 같이 설정할 수 도있다.    
+
+```js
+computed: mapState({
+  todolist2: (state) => state.todolist
+})
+```
+
+#### mapMutations
+
+`store.mutations` 속성에 정의된 메서드를 호출하기 위해 아래처럼 `commit` 를 사용해왔다.  
+
+```js
+methods: {
+  deleteTodo: function(id) {
+    this.$store.commit(Constant.DELETE_TODO, { id: id });
+  }
+}
+```
+
+어차피 `commit` 의 첫번째 매개변수는 `mutations` 속성의 이름, 두번째 매개변수는 전달할 객체(`payload`)가 항상 고정적으로 들어간다.  
+
+이런 지루한 과정을 `mapMutations` 함수로 생략하자.  
+
+`mapState`에 이어 `mapMutations`도 `import`
+
+```js
+import {mapState, mapMutations} from 'vuex';
+```
+
+```js
+methods: {
+  ...mapMutations(['deleteTodo'])
+}
+```
+
+`deleteTodo` 메서드를 사용하면 `mutations`속성에 정의된 `deleteTodo` 가 호출된다.  
+
+`mapState`와 마찬가지로 메서드 명이 `mapMutations` 에서 사용한 문자열로 고정되기에 변경하고 싶다면 배열이 아닌 아래처럼 객체형식으로 전달해야 한다.  
+
+```js
+methods: {
+  ...mapMutations({
+    removeTodo: Constant.DELETE_TODO
+  })
+}
+```
+
+`mapState`, `mapMutations` 모두 일반적인 호출방식과 사용법만 조금 다를뿐 기능은 동일하다.  
+
+#### mapGetter
+
+
+```js
+import Vue from 'vue';
+import Vuex from 'vuex';
+import Constant from '../Constant.js';
+
+Vue.use(Vuex);
+
+const store = new Vuex.Store({
+    state: {
+      currentRegion: "all",
+      countries : [{ no:1,  name : "미국", capital : "워싱턴DC", region:"america" },...]
+    },
+    getters : {
+        countriesByRegion(state) {
+            if (state.currentRegion == "all") {
+                return state.countries;
+            } else {
+                return state.countries.filter(c => c.region==state.currentRegion);
+            }
+        }
+    }, 
+    mutations: {
+        [Constant.CHANGE_REGION] : (state, payload) => {
+            state.currentRegion = payload.region;
+        }
+    }
+})
+
+export default store;
+```
+
+`getters` 속성에 `countriesByRegion` 이라는 `state.currentRegion` 값에 따라 특정 데이터만 반환하는 메서드를 정의, `state.countries` 값이 `filter` 를 통해 달라진다.  
+
+일반적으로 `getters` 에 정의한 `countriesByRegion` 메서드로 반환된 데이터를 뷰 컴포넌트에서 등록하려면 아래 처럼 설정해왔다.  
+
+```js
+export default {
+  name: "CountryList",
+  computed: {
+    countries: function() {
+      return this.$store.getters.countriesByRegion;
+    }
+  }
+}
+```
+
+`mapGetters` 를 사용하면 아래처럼 단축 가능하다.  
+
+```js
+import { mapGetters } from "vuex";
+export default {
+  name: "CountryList",
+  computed: mapGetters({countries: "countriesByRegion"})
+};
+```
+
 #### mapActions
 
 `mapMutations` 과 마찬가지로 `mapActions`를 통해 `actions`와 바인딩시켜 코드 생략이 가능하다.  
@@ -477,17 +553,12 @@ methods: {
 }
 ```
 
-![vue16]({{ "/assets/vue/vue16.png" | absolute_url }}){: .shadow}   
 
-최종적으로 위와 같은 형식을 갖춘다.  
-
-`Action` 을 통해 `Mutation` 을 호출하고 되고 `State` 가 변이된다.  
-각 컴포넌트들은 `Getters` 를 통해 약간 가공된 `State`를 가져와 출력한다.  
-
-
-#### store.modules
+### Module
 
 ![vue17]({{ "/assets/vue/vue17.png" | absolute_url }}){: .shadow}   
+
+> https://vuex.vuejs.org/kr/guide/modules.html
 
 각 컴포넌트가 공유하는 데이터 `state`, 그리고 `state` 를 관리하는 `mutations`, `actions` 등 을 정의하였다.  
 
@@ -520,7 +591,41 @@ const store = new Vuex.Store({
 })
 ```
 
-이제 모든 `actions`, `mutations`, `state` 를 꾸역꾸역 집어넣을 필요 없이 별도의 파일, 별도의 객체 형식으로 관리할 수 있다.  
+이제 모든 `actions`, `mutations`, `state` 를 꾸역꾸역 집어넣을 필요 없이 별도의 객체 형식으로 계층형으로 관리할 수 있다.  
 
 모듈 방식을 사용해도 기존의 액션과 변이 메서드 호출 방식(`commit`, `dispatch`) 을 사용하면 된다.  
+
+또한 각 모듈에서 아래 방법을 통해 매개변수를 통해 `rootState`, `rootGetters` 에 접근할 수 있다.  
+
+반면 루트 `Store`(저장소) 에선 모듈의 상태에 접근은 불가능하다.  
+
+```js
+// 모듈 getters 에서 root state 접근하기  
+modules: {
+  ...
+  getters: {
+    someGetter (state, getters, rootState, rootGetters) {
+      getters.someOtherGetter // -> 'foo/someOtherGetter'
+      rootGetters.someOtherGetter // -> 'someOtherGetter'
+    },
+    someOtherGetter: state => { ... }
+  }
+}
+```
+
+```js
+// 모듈 actions 에서 root state 접근하기 
+modules: {
+  ...
+  actions: {
+    doneToggle: (store, payload) => {
+        store.rootState.someData;
+        store.rootGetters.someMethods;
+        ...
+    },
+  }
+}
+```
+
+이외에도 모듈 관련된 다양한 문법이 있으니 위의 url 참고  
 
