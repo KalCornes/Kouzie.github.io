@@ -152,7 +152,7 @@ axios.options(url [,config]);
 ### Vue 와 `axios`
 
 
-`axios` 는 여러 컴포넌트에게 자주 사용되기 때문에 각 컴포넌트에 `import` 하기 보다 `main.js` 에 한번만 import 해서 사용하는 것이 깔끔하다.  
+`axios` 는 여러 컴포넌트에게 자주 사용되기 때문에 각 컴포넌트에 `import` 하기 보다 `main.js` 에 한번만 `import` 해서 사용하는 것이 깔끔하다.  
 
 또한 프로토 타입으로 등록해 다른 뷰 인스턴스에서 쉽게 접근할 수 있도록 설정한다.  
 
@@ -237,7 +237,8 @@ const store = new Vuex.Store({
 })
 ```
 
-> `Vue.use(Vuex)`: `Vuex` 를 전역에서 사용할 수 있도록 설정   
+> `Vue.use(Vuex)`: `Vuex` 플러그인을 사용할 수 있도록 설정   
+
 모든 컴포넌트의 `State` 를 `Store` 에서 관리할 필요는 없다. 여러 컴포넌트가 공유할 데이터만 저장하면 된다.  
 
 > `state`, `mutataions` 외에도 `actions`, `getters`, `module` 속성이 있는데 하나씩 알아보자.  
@@ -254,6 +255,20 @@ new Vue({
 ```
 
 > `Vuex` 를 사용하면 단순 공유 데이터 생성뿐 아니라 상태 자체를 저장할 수 있기 때문에 크롬 디버깅창에서 확인 가능하다.  
+
+### State
+
+Store 생성의 목적, 상태(데이터) 를 저장하는 속성이다.  
+
+컴포넌트에서 `store.state` 에 접근하려면 아래처럼 사용.  
+
+```js
+computed: {
+  todolist: function() {
+    return this.$store.state.todolist;
+  }
+}
+```
 
 ### Mutation
 
@@ -335,6 +350,38 @@ computed: {
 }
 ```
 
+위처럼 이미 저장된 데이터를 기반으로 필터링해 가져올 수도 있지만  
+동적으로 변하는 컴포넌트에서 인자값 전달하여 필터링된 데이터를 가져오고 싶을 수 도 있다.  
+
+```js
+const store = new Vuex.Store({
+  getters: {
+    getTodoById: (state) => (id) => {
+      return state.todos.find(todo => todo.id === id)
+    }
+  }
+})
+```
+
+```js
+store.getters.getTodoById(2)
+```
+
+화살표 함수가 익숙치 않다면 아래 형식을 참고  
+
+```js
+const store = new Vuex.Store({
+  getters: {
+    getTodoById: function (state) {
+      return function(id) {
+        return state.todos.find(todo => todo.id === id)
+      }
+    }
+  }
+})
+```
+
+즉 store 인스턴스가 생성될때 매개변수 1개를 인자로 받는 함수참조값을 `getTodoById` 에 매핑한다.  
 
 ### Action
 

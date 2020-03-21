@@ -40,7 +40,7 @@ docker run -d -p 8080:8080 -p 50000:50000 --name myjenkins jenkins/jenkins
 
 
 다음과 같이 docker가 실행중인지 확인 후 
-![jenkins1]({{ "/assets/2019/jenkins1.png" | absolute_url }}){: .shadow}  
+![jenkins1]({{ "/assets/2019/jenkins1.png" | absolute_url }})   
 
 ```
 docker exec -it -u root myjenkins /bin/bash
@@ -48,7 +48,7 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
 도커의 기본 서비스 포트는 8080으로 접속하면 비밀번호를 입력하라 한다.  
-위의 `initialAdminPassword` 파일에서 비밀번호를 찾아 입력후 모든 `plugin install`.  
+위의 `initialAdminPassword` 파일에서 비밀번호를 찾아 입력후 모든 `plugin install`.   
 
 
 ### jenkins, git 연동
@@ -60,6 +60,7 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 docker안에서 생성된 배포파일을 밖의 실사용 서버로 전송하는 작업을 수행시키도록 해야한다.  
 
 추가적으로 필요한 아래 플러그인을 설치한다. `jenkins관리 -> 플러그인 관리`
+
 ```
 Deploy to container  
 Maven Integration  
@@ -71,12 +72,14 @@ GitLab
 
 > 주의사항: 만약 허가되지 않은 인증서(사내 서버 등)의 경우 jenkins에서 인증서 확인을 무시하도록 설정해야 한다.  
 `JENKINS_HOME` 환경변수 위치에 `.gitconfig` 파일을 생성  
+
 ```
 vi /var/jenkins_home/.gitconfig
 
 [http]
 sslVerify=false
 ```
+
 젠킨스 환경변수 값은 우측과 같다.  `JENKINS_HOME=/var/jenkins_home`  
 
 #### ssh 설정  
