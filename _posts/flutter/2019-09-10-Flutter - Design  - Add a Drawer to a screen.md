@@ -18,23 +18,33 @@ toc: true
 
 ---
 
+> https://flutter.dev/docs/cookbook/design/drawer
+
+
 ## Drawer
 
 > A material design panel that slides in horizontally from the edge of a Scaffold to show navigation links in an application.
 
-scaffold 의 edge에서 슬라이드 형식으로 위젯, 
+![flutter27]({{ "/assets/flutter/flutter27.png" | absolute_url }}){: width="400" }  
 
-참고로 Drawer는 서랍이란 뜻  
+서랍(`Drawer`) 모양의 icon 을 누르면 옆에서 슬라이드 형식으로 버튼이 출력된다.  
+버튼을 눌러 페이지 변경도 가능하다.  
 
-다음 절차대로 Drawer를 만들수 있다함  
+### 1. Create a Scaffold.   
 
-## 1. Create a Scaffold.     
+`appBar`에 `Drawer`가 추가될것 같지만 별도의 속성으로 추가한다.  
+
 ```dart
 Scaffold(
   drawer: // Add a Drawer here in the next step.
 );
-```
-## 2. Add a drawer.  
+```  
+
+### 2. Add a drawer.  
+
+
+`Drawer({...})` 생성자로 Drawer 객체를 생성할 수 있다.  
+
 ```dart
 Scaffold(
   drawer: Drawer(
@@ -42,80 +52,81 @@ Scaffold(
   )
 );
 ```
-## 3. Populate the drawer with items.  4. Close the drawer programmatically.  
+
+길어지기 때문에 별도의 메서드로 구분하자.  
 
 ```dart
-import 'package:flutter/material.dart';
+Scaffold(
+  drawer:_buiuldDrawer(context)
+  ...
+  ...
+)
+Widget _buildDrawer(context) {...}
+```
 
-void main() => runApp(MyApp());
+### 3. Populate the drawer with items.  
 
-class MyApp extends StatelessWidget {
-  final appTitle = 'Drawer Demo';
+이제 `Drawer` 객체를 생성, 반환하는 `_buildDrower` 메서드를 정의해보자.  
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: appTitle,
-      home: MyHomePage(title: appTitle),
-    );
-  }
-}
+서랍목록처럼 표시하기 위해 `child` 로 `ListView`를 사용  
 
-class MyHomePage extends StatelessWidget {
-  final String title;
-
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text('My Page!')),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('Drawer Header'),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('Item 1'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-          ],
+```dart
+Widget _buildDrower(context) {
+  return Drawer(
+    child: ListView(
+      padding: EdgeInsets.zero, //기본적으로 존재하는 상단매뉴 공백을 지워줌 
+      children: <Widget>[ //List에 들어가게될 위젯들 
+        DrawerHeader( 
+          child: Text('Drawer Header'),
+          decoration: BoxDecoration(color: Colors.blue)
         ),
-      ),
-    );
-  }
+        ListTile(
+          title: Text('Item 1'),
+          onTap: () {}
+        ),
+        ListTile(
+          title: Text('Item 2'),
+          onTap: () {}
+        ),
+      ],
+    ),
+  );
 }
 ```
 
-### ListView, ListTile
 
-> ListView: A scrollable list of widgets arranged linearly.
+### 4. Close the drawer programmatically.  
 
-> ListTile: A single fixed-height row that typically contains some text as well as a leading or trailing icon.
+버튼을 눌러 `Drawer` 를 닫고 싶다면 `Navigator.pop(context)` 을 호출한다.  
+
+```dart
+Widget _buildDrower(context) {
+  return Drawer(
+    child: ListView(
+      padding: EdgeInsets.zero, //기본적으로 존재하는 상단매뉴 공백을 지워줌 
+      children: <Widget>[ //List에 들어가게될 위젯들 
+        ...
+        ...
+        ListTile(
+          title: Text('Item 2'),
+          onTap: () {
+            Navigator.pop(context); //Drawer 를 닫음  
+          },
+        ),
+      ],
+    ),
+  );
+}
+```
+
+#### ListView, ListTile
+
+위의 `Drawer` 예제에선 `ListView` 내부의 children 으로 `ListTile` 를 사용했다.  
+
+> ListView: A scrollable list of widgets arranged linearly.   
+> ListTile: A single fixed-height row that typically contains some text as well as a leading or trailing icon.  
+
+`ListView`, `ListTile` 는 `Drawer` 외에도 리스트 형식의 디자인을 표시할때 많이 사용된다.  
 
 ```dart
 import 'package:flutter/material.dart';
@@ -143,7 +154,6 @@ class ListPage extends StatelessWidget {
     int _act = 2;
     return Scaffold(
       body: ListView(
-
         children: <Widget>[
           Card(
             child: ListTile(
@@ -198,10 +208,3 @@ class ListPage extends StatelessWidget {
 ```
 
 ![flutter6]({{ "/assets/flutter/flutter6.png" | absolute_url }}){: width="400" }  
-
-
-다시 `Drawer`로 돌아와서 `Scaffold`의 `drawer`속성 정의를 보자.  
-
-단순히 `Drawer` 위젯에 child로 `ListView`가 들어갈 뿐이다.    
-처음보는 것은 패딩설정 `padding: EdgeInsets.zero,`  
-`children`속성을 보면 `List<Widget>`의 `DrawerHeader` 위젯  

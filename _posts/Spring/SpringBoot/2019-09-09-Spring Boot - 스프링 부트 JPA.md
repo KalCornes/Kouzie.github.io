@@ -49,7 +49,7 @@ JPA를 개발하려면 기존엔 아래와 같은 코드가 필요했다.
 
 Spring으로 ORM을 사용해 개발시 단순 Hibernate를 사용해 개발할 일이 없다. JPA만을 사용할 일은 더더욱 없다.  
 
-![springboot_jpa_1]({{ "/assets/springboot/springboot_jpa_1" | absolute_url }}){: .shadow}   
+![springboot_jpa_1]({{ "/assets/springboot/springboot_jpa_1.png" | absolute_url }}){: .shadow}   
 
 즉 Hibernate, Spring Boot JPA모두 JPA를 구현한 구현체이지만 `Spring Boot JPA` 가 훨씬 편하게 사용할 수 있음을 알 수 있다.  
 

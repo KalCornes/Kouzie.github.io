@@ -168,7 +168,7 @@ Route _createRoute() {
 }
 ```
 
-`pageBuilder`에 현재 상태, 에니메이션 등을 설정해 `StatelessWidget`을 생성하여 Route로 감싼후 반환한다.  
+`pageBuilder`에 현재 상태, 애니메이션 등을 설정해 `StatelessWidget`을 생성하여 Route로 감싼후 반환한다.  
 
 애니메이션 생략하고 그냥 밑에서 올라오는 페이지를 Navigator로 push하고 싶다면 `MaterialPageRoute` 사용 
 
