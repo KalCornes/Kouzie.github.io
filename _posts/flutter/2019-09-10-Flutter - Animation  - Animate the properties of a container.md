@@ -119,7 +119,7 @@ Widget _buildBody() {
 
 # Flutter cookbook - Fade a widget in and out
 
-모양변경이 아닌 동적으로 출력 여부를 결정하고 싶을땐 `AnimatedOpacity` 객체를 사용하면 된다.  
+모양변경이 아닌 동적으로 출력(`disable`, `enable`) 여부를 결정하고 싶을땐 `AnimatedOpacity` 객체를 사용하면 된다.  
 
 ```dart
 AnimatedOpacity(

@@ -18,10 +18,9 @@ toc: true
 
 ---
 
-> https://flutter.dev/docs/cookbook/design/drawer
-
-
 ## Drawer
+
+> https://flutter.dev/docs/cookbook/design/drawer
 
 > A material design panel that slides in horizontally from the edge of a Scaffold to show navigation links in an application.
 

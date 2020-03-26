@@ -18,11 +18,15 @@ toc: true
 
 ---
 
-## snackbar
+# Display a snackbar
 
-이렇게 생긴놈  
+> https://flutter.dev/docs/cookbook/design/snackbars
+
+## SnackBar
 
 ![flutter7]({{ "/assets/flutter/flutter7.png" | absolute_url }}){: width="400" }  
+
+이렇게 생긴놈  
 
 상속구조  
 `Object > Diagnosticable > DiagnosticableTree > Widget > StatelessWidget > SnackBar`
@@ -33,7 +37,10 @@ toc: true
 2. Display a SnackBar.  
 3. Provide an optional action.  
 
-사실 1, 2단계만 거쳐도 만들어지는 매우 간단한 위젯  
+
+사실 1, 2단계, `Scaffold` 생성후 `SnackBar` 출력만 하면 만들어지는 매우 간단한 위젯  
+
+### 1. Create a Scaffold.
 
 ```dart
 void main() => runApp(SnackBarDemo());
@@ -44,9 +51,7 @@ class SnackBarDemo extends StatelessWidget {
     return MaterialApp(
       title: 'SnackBar Demo',
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('SnackBar Demo'),
-        ),
+        appBar: AppBar(title: Text('SnackBar Demo')),
         body: SnackBarPage(),
       ),
     );
@@ -54,7 +59,11 @@ class SnackBarDemo extends StatelessWidget {
 }
 ```
 
-별도로 MyApp같은걸 만들지 말고 바로 Scaffold생성자로 home에 생성한다.  
+가장 기본적인 `Scaffold` 객체 생성   
+
+### 2. Display a SnackBar.
+
+`Scaffold`의 `body`로는 `StatelessWidget` 를 사용한다.  
 
 ```dart
 class SnackBarPage extends StatelessWidget {
@@ -81,26 +90,49 @@ class SnackBarPage extends StatelessWidget {
 }
 ```
 
-Scaffold 페이지 body부분은 위와같다.  
-버튼을 클릭하면 `SnackBar`가 생성되고  
+`SnackBar` 를 위한 별도의 속성은 없으며  
 
-현제 Scaffold 페이지에서 SnackBar를 출력하는 `Scaffold.of(context).showSnackBar(...)` 를 호출한다.  
+`RaisedButton`을 누르면 `SnackBar` 객체를 생성하고 `Scaffold.of(context).showSnackBar(snackBar)` 메서드를 호출해 `SnackBar`를 출력한다.  
 
+### 3. Provide an optional action.  
+
+```dart
+final snackBar = SnackBar(
+  content: Text('Yay! A SnackBar!'),
+  action: SnackBarAction(
+    label: 'Undo',
+    onPressed: () {
+      // Some code to undo the change.
+    },
+  ),
+);
+```
+
+`SnackBar` 객체 생성부분만 때어서 보자.  
+객체 내부에서도 `action` 속성과 `SnackBarAction` 객체를 통해 이벤트처리가 가능하다.  
+
+# Update the UI based on orientation
+
+> https://flutter.dev/docs/cookbook/design/orientation
+
+방향에 따른 UI 변경을 알아보자.  
+스크린 화면을 회전하여 UI 배치를 변경하고 싶을때(`portrait mode` 에서 `landscape mode`로 변경한다고 한다) UI 변경을 조작할 수 있다.  
 
 ## GridView, OrientationBuilder
 
-스크린 화면을 회전하여 UI 배치를 변경하고 싶을때 `portrait mode` 에서 `landscape mode`로 변경할 때 `GridView`, `OrientationBuilder` 를 사용해 해결할 수 있다.  
+`GridView`, `OrientationBuilder` 를 사용해 해결할 수 있다.  
 
 1. Build a GridView with two columns.  
 2. Use an OrientationBuilder to change the number of columns.  
 
-### GridView
+세로줄을 2개로 `GridView`를 생성하고 `OrientationBuilder`를 통해 `landscape mode`에선 3줄로 변경해보자.  
+
+### GridView 생성
 
 `ListView`처럼 `GridView`역시 `children: <Widget>[]` 형식의 자식 객체들을 가지며 출력한다.  
 
 상속구조  
 `Object > Diagnosticable > DiagnosticableTree > Widget > StatelessWidget > ScrollView > BoxScrollView > GridView`  
-
 
 ```dart
 import 'package:flutter/material.dart';
@@ -111,7 +143,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final appTitle = 'Drawer Demo';
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -127,11 +158,10 @@ class GridPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GridView.count(
-        primary: false,
         padding: const EdgeInsets.all(20),
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        crossAxisCount: 3,
+        crossAxisSpacing: 10, //좌우 간격
+        mainAxisSpacing: 10, //상하 간격
+        crossAxisCount: 2, //칼럼수
         children: <Widget>[
           Container(
             padding: const EdgeInsets.all(8),
@@ -172,14 +202,19 @@ class GridPage extends StatelessWidget {
 
 ![flutter8]({{ "/assets/flutter/flutter8.png" | absolute_url }}){: width="400" }  
 
-* primary: false, - 스크롤 관련 속성, false의 경우 충분한 content가 있어야 스크롤 가능, true의 경우 스크롤 가능
-* crossAxisSpacing: 10, - 좌우 사이 공백
-* mainAxisSpacing: 10, - 상하 사이 공백
-* crossAxisCount: 2, - 하나의 리스트에 표시할 블럭 개수
+* `crossAxisSp acing`: **좌우** 사이 공백
+* `mainAxisSpacing`: **상하** 사이 공백
+* `crossAxisCount`: 하나의 리스트에 표시할 **블럭 개수**
+
+![flutter29]({{ "/assets/flutter/flutter29.png" | absolute_url }}){: width="400" }  
 
 ## OrientationBuilder
 
-스크린 출력 모드에 따라 양식을 UI를 변경하려면 `OrientationBuilder`로 `GridView`를 만들어야 한다.
+스크린 출력 모드에 따라 양식을 UI를 변경하려면 `OrientationBuilder`로 `GridView`를 감싼다.  
+
+`portrait mode` 에선 `crossAxisCount = 2`  
+`landscape mode` 에선 `crossAxisCount = 3` 으로 설정한다.  
+
 ```dart
 OrientationBuilder(
   builder: (context, orientation) {
@@ -192,10 +227,7 @@ OrientationBuilder(
 );
 ```
 
-딱보면 어떤식으로 운영되는지 알 수 있다.  
-세로모드(portrait)일 경우 2개씩 출력, 아닐경우 3개 출력
-
-다른 속성또한 이런식으로 변경이 가능.  
+다른 속성또한 모드에 따라 변경하고 싶다면 `orientation` 속석을 사용해 변경이 가능하다.  
 
 ```dart
 import 'package:flutter/material.dart';
@@ -275,4 +307,4 @@ class GridPage extends StatelessWidget {
 }
 ```
 
-> 주의: 가상 휴대폰 회전 설정을 허용하고 테스트 진행....
+![flutter30]({{ "/assets/flutter/flutter30.png" | absolute_url }}){: width="400" }  
