@@ -172,7 +172,7 @@ I/flutter ( 6281): Second text field: test
 
 ## Retrieve the value of a text field
 
-입력마다 콜백함수를 호출하는 경우도 있겠지만 특정 버튼 클릭시 TextField 값을 가지고 특정 작업을 할 경우가 있을것이다.  
+입력마다 콜백함수를 호출하는 경우도 있겠지만 특정 버튼 클릭시 `TextField` 값을 가지고 특정 작업을 할 경우가 있을것이다.  
 
 `TextField`값을 어떻게 가져오는지 알아보자.  
 
@@ -278,6 +278,7 @@ builder: (BuildContext context) {
 `content: Text(myController.text),`
 
 전체 코드  
+
 ```dart
 import 'package:flutter/material.dart';
 
