@@ -86,7 +86,7 @@ class _AnimatedContainerAppState extends State<AnimatedContainerApp> {
 
 어쨋건 설정한 `_width`, `_height`, `_color`, `_borderRadius` 룰 설정한 `AnimatedContainer`이 반환되고 아래 그림처럼 출력된다.  
 
-![image2]({{ "/assets/project/chatting/image2.png" | absolute_url }})  
+![image2]({{ "/assets/project/chatting/image2.png" | absolute_url }}){: width="400" }   
 
 버튼클릭시 `Random` 객체로 위의 `AnimatedContainer` 세팅값이 랜덤으로 변경된다.  
 

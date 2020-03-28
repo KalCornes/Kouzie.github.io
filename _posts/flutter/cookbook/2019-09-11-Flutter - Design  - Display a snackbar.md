@@ -207,6 +207,7 @@ class GridPage extends StatelessWidget {
 * `crossAxisCount`: 하나의 리스트에 표시할 **블럭 개수**
 
 ![flutter29]({{ "/assets/flutter/flutter29.png" | absolute_url }}){: width="400" }  
+> https://developpaper.com/flutter-grid-layout-gridview/
 
 ## OrientationBuilder
 
