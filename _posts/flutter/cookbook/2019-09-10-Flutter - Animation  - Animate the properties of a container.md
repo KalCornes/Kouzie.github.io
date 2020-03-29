@@ -28,9 +28,11 @@ toc: true
 
 > `Container` 위젯의 상속구조는 아래와 같다.  
 > `Object > Diagnosticable > DiagnosticableTree > Widget > StatelessWidget > Container`  
+
 > 반면 `AnimatedContainer` 위젯의 상속구조는 아래와 같다.  
-> `Object > Diagnosticable > DiagnosticableTree > Widget > StatefulWidget > ImplicitlyAnimatedWidget > AnimatedContainer`
-> 만약 `Container`와 같은 위젯을 사용해 애니메이션 구현을 하고 싶다면 `StatefulWidget`을 상속하는 `AnimatedContainer` 을 사용하도록 하자.  
+> `Object > Diagnosticable > DiagnosticableTree > Widget > StatefulWidget > ImplicitlyAnimatedWidget > AnimatedContainer`  
+
+> 만약 `Container`와 같은 위젯을 사용해 애니메이션 구현을 하고 싶다면 `StatefulWidget`을 상속하는 `AnimatedContainer` 을  사용하도록 하자.  
 > https://api.flutter.dev/flutter/widgets/AnimatedContainer-class.html
 
 
@@ -63,6 +65,7 @@ class _AnimatedContainerAppState extends State<AnimatedContainerApp> {
           child: Icon(Icons.play_arrow),
           onPressed: () {
             setState(() {
+              // 버튼 클릭마다 설정값이 랜덤으로 변경  
               final random = Random();
               _width = random.nextInt(300).toDouble();
               _height = random.nextInt(300).toDouble();
@@ -86,7 +89,7 @@ class _AnimatedContainerAppState extends State<AnimatedContainerApp> {
 
 어쨋건 설정한 `_width`, `_height`, `_color`, `_borderRadius` 룰 설정한 `AnimatedContainer`이 반환되고 아래 그림처럼 출력된다.  
 
-![image2]({{ "/assets/project/chatting/image2.png" | absolute_url }}){: width="400" }   
+![flutter28]({{ "/assets/flutter/flutter28.png" | absolute_url }}){: width="400" }  
 
 버튼클릭시 `Random` 객체로 위의 `AnimatedContainer` 세팅값이 랜덤으로 변경된다.  
 
@@ -96,16 +99,13 @@ class _AnimatedContainerAppState extends State<AnimatedContainerApp> {
 Widget _buildBody() {
   return Center(
     child: AnimatedContainer(
-      // Use the properties stored in the State class.
       width: _width,
       height: _height,
       decoration: BoxDecoration(
         color: _color,
         borderRadius: _borderRadius,
       ),
-      // Define how long the animation should take.
       duration: Duration(seconds: 1),
-      // Provide an optional curve to make the animation feel smoother.
       curve: Curves.fastOutSlowIn,
     ),
   );
@@ -113,6 +113,7 @@ Widget _buildBody() {
 ```
 
 `Center` 위젯으로 감싸진 `AnimatedContainer` 가 반환된다.  
+`BoxDecoration`객체를 통해 박스의 세부 디자인을 설정가능하다.  
 
 `StatelessWidget` 를 상속하기에 동적변경이 물가능하다.  
 
@@ -153,7 +154,7 @@ class _AnimatedContainerAppState extends State<AnimatedContainerApp> {
           child: Icon(Icons.play_arrow),
           onPressed: () {
             setState(() {
-              _visible = !_visible;
+              _visible = !_visible; //투명도 토글역할 변수  
               final random = Random();
               _width = random.nextInt(300).toDouble();
               _height = random.nextInt(300).toDouble();

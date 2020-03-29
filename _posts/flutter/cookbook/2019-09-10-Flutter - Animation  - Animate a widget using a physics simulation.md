@@ -98,7 +98,7 @@ https://www.youtube.com/watch?v=g2E7yl3MwMk
 `Alignment(1.0, 1.0)` represents the **bottom right** of the rectangle.  
 
 
-### State<T extends StatefulWidget> class
+## State<T extends StatefulWidget> class
 
 상속관계  
 `Object > Diagnosticable > State`  
@@ -151,7 +151,7 @@ class _DraggableCardState extends State<DraggableCard> {
 
 이벤트 등록, 애니메이션 처리를 위해선 `SingleTickerProviderStateMixin`, `AnimationController` 객체들을 사용해야 한다.  
 
-#### SingleTickerProviderStateMixin
+### SingleTickerProviderStateMixin
 
 > https://api.flutter.dev/flutter/widgets/SingleTickerProviderStateMixin-mixin.html
 
@@ -171,7 +171,7 @@ mixin SingleTickerProviderStateMixin<T extends StatefulWidget> on State<T> imple
 
 밑의 `AnimationController` 를 사용해 애니메이션을 구현하려면 `Ticker` 들을 생성하는 `TickerProvider`가 필요하기에 `SingleTickerProviderStateMixin` 을 사용해 `_DraggableCardState` 객체를 확장해야 한다.  
 
-#### AnimationController
+### AnimationController
 
 > A controller for an animation.
 
@@ -206,7 +206,7 @@ class _DraggableCardState extends State<DraggableCard> with SingleTickerProvider
 동작되는 애니메이션만 정의하면 된다.  
 
 
-#### GestureDetector  
+### GestureDetector  
 
 제스처를 통해 위젯을 움직이려면 `GestureDetector`가 필요하다.  
 빌드시에 `GestureDetector`를 생성 반환한다.  
@@ -277,7 +277,7 @@ GestureDetector({Key key, Widget child, GestureTapDownCallback onTapDown, Gestur
 > https://api.flutter.dev/flutter/widgets/GestureDetector-class.html  
 
 
-### 스프링 처럼 원래대로 돌아가는 효과
+## 스프링 처럼 원래대로 돌아가는 효과
 
 다시 원래 위치 `Alignment.center` 로 스프링 효과처럼 돌아가기 위한 메서드 `_runAnimation`를 정의  
 
