@@ -17,7 +17,7 @@ toc: true
 
 ---
 
-## Spring Security
+# Spring Security
 
 > Spring doc : https://docs.spring.io/spring-security/site/docs/5.2.3.BUILD-SNAPSHOT/reference/htmlsingle/
 
@@ -108,7 +108,7 @@ public class MemberRole {
 }
 ```
 
-Member는 여러개의 role을 가질 수 있는 N:1 관계.  
+`Member`는 여러개의 `role`을 가질 수 있는 N:1 관계.  
 
 
 ## 로그인/로그아웃 필터 처리
@@ -142,7 +142,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-> 스프링 5.0 버전 이상부턴 입력된 패스워드를 `PasswordEncoder`를 통해 인코딩 후 비교한다고 한다. `{noop}`을 앞에 붙여 해당 과정을 생략한다.  
+
+
+> 스프링 5.0 버전 이상부턴 입력된 패스워드를 `PasswordEncoder`를 통해 인코딩 후 비교한다고 한다.  
+```
+{bcrypt}$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG
+{noop}password
+{pbkdf2}5d923b44a6d129f3ddf3e3c8d29412723dcbde72445e8ef6bf3b508fbf17fa4ed4d6b99ca763d8dc
+{scrypt}$e0801$8bWJaSu2IKSn9Z9kM+TPXfOc/9bdYSrN1oD9qfVThWEwdRTnO7re7Ei+fUZRJ68k9lTyuTeUp4of4g24hHnazw==$OAOec05+bXxvuu/1qZ6NUR+xQYvYv7BeL1QxwRpY5Pc=
+{sha256}97cde38028ad898ebc02e690819fa220e88c62e0699403e94fff291cfffaf8410849f27605abcbc0
+```
+패스워드 앞에 `{...}` 문자열을 사용해 어떤 방식으로 인코딩 되었는지 확인 가능하다.  
+어떠한 방식으로보 `{noop}`을 앞에 붙여 인코딩 과정을 사용하지 않음을 명시한다.  
 
 id 는 `manger`, 비밀번호는 `1111` 로 설정  
 
@@ -178,11 +189,11 @@ public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception 
 
 > `rolePrefix("ROLE_")` : Spring security 는 롤 베이스 기반 보안정책을 제공하며 기본적으로 `ROLE_`접두사가 기본적으로 붙이도록 설정함.  
 공식문서에선 `RoleVoter`를 커스텀하면 접두사 변경이 가능하다 하는데 커스텀이 쉽지 않다...  
-https://javadeveloperzone.com/spring-boot/spring-security-custom-rolevoter-example/
+> https://javadeveloperzone.com/spring-boot/spring-security-custom-rolevoter-example/
 
 
 
-### 커스텀 로그인, 로그아웃, 접근제한 페이지 
+## 커스텀 로그인, 로그아웃, 접근제한 페이지 
 
 ```java
 @Override
@@ -198,6 +209,7 @@ protected void configure(HttpSecurity http) throws Exception {
     //.successForwardUrl("")
     //.failureForwardUrl("")
     // 로그인 데이터 post 로 전달할 url 변경, 로그인 success, failure 리다이렉트 페이지 변경
+    // 어차피 form 을 사용해 post 방식의 /login url에 로그인 처리과정을 적용하기에 사용하지 않는다.
 
     //.usernameParameter("user_id")
     //.passwordParameter("user_pw")
@@ -234,7 +246,7 @@ public class LoginController {
 
 
 
-### userDetailsService
+## userDetailsService
 
 간단한 데이터베이스 조회 후 인증작업을 거치려면 `AuthenticationManagerBuilder`의 `jdbcAuthentication`를 사용하면 되지만  
 커스텀 인증과정을 거치려면 `userDetailsService` 를 사용해야 한다.  
@@ -252,7 +264,8 @@ public class CustomUsersService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         memberRepository.findById(username);
-        return null;
+        //TODO return...
+        return null; 
     }
 }
 ```
@@ -306,7 +319,7 @@ public class CustomSecurityUsersService implements UserDetailsService {
 }
 ```
 
-#### 컨트롤러에서 로그인 정보 접근  
+### 컨트롤러에서 로그인 정보 접근  
 
 ```java
 @GetMapping("/list")
@@ -328,7 +341,7 @@ public void list(
 }
 ```
 
-### 로그인 정보 표시
+## 로그인 정보 표시
 
 현재 `thymeleaf`를 통해 뷰 페이지를 출력하고 있으며 시큐리티에 대한 태그를 사용하려면 `thymeleaf-extras-springsecurity5` 의존성을 추가해야 한다.  
 
@@ -359,7 +372,15 @@ public void list(
   <h3 sec:authorize="hasRole('ROLE_MANAGER')">This Conetent Only For MANAGER</h3>
   <h3 sec:authorize="hasRole('ROLE_BASIC')">This Conetent Only For BASIC</h3>
   <h3 sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_BASIC')">This Conetent For Everyone</h3>
+  <h3><div>[[${#authentication.principal}]]</div></h3>
+  <h3><div>[[${#authentication.principal.member.uname}]]</div></h3>
+  <h3 th:with="member=${#authentication.principal.member}">
+      <div>[[${member.uid}]]</div>
+      <div>[[${member.upw}]]</div>
+      <div>[[${member.uname}]]</div>
+  </h3>
 </div>
+
 ```
 
 ![springboot_security2]({{ "/assets/springboot/springboot_security2.png" | absolute_url }}){: .shadow}  
@@ -369,12 +390,12 @@ public void list(
 > `Authority`가 좀더 세세한 의미로 관리자는 모두 `ROLE_ADMIN` 이란 역할(`ROLE`)을 가지지만 각 관리자별로 별도의 `AUTHORITY`(권한)을 할당해 줄 수 있다.  
 
 
-### 로그인 유지 기능 추가  
+## 로그인 유지 기능 추가  
 
 로그인 유지를 위해 서버상 `session`에 데이터를 저장해놓고 처리하는 방법이 있고
 클라이언트에 유저정보를 담은 쿠키를 생성하고 해당 쿠키를 전달받아 처리하는 방법이 있다.  
 
-우선 로그인 폼에 remember-me 파라미터를 추가 
+우선 로그인 폼에 `remember-me` 파라미터를 추가 
 
 ```html
 <form method="post">
@@ -391,7 +412,7 @@ public void list(
   </form>
 ```
 
-또한 필터설정에서도 remember-me에 대한 정보를 클라이언트에게 반환해야 하기때문에 아래 설정 추가  
+또한 필터설정에서도 `remember-me`에 대한 정보를 클라이언트에게 반환해야 하기때문에 아래 설정 추가  
 
 ```java
 @Override
@@ -405,7 +426,7 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-`securitykey`라는 문자열을 키로 `customSecurityUsersService`객체로 사용자 데이터를 가져와 암호화(Hash) 하여 사용자에게 반환한다.  
+`securitykey`라는 문자열을 키로 `customSecurityUsersService`객체에서 사용자 데이터를 가져와 암호화(Hash) 하여 사용자에게 반환한다.  
 해당 쿠키는 기본 2주 유지되지만 `tokenValiditySeconds` 메서드를 통해 변경 가능하다.  
 
 > `Base64Encode(username:expiryTime:Md5(username:expiryTime:password:key)` 한 값을 반환한다고 한다.  
@@ -423,9 +444,10 @@ protected void configure(HttpSecurity http) throws Exception {
 @Table(name = "persistent_logins")
 @Entity
 public class PersistentLogin {
-    private String username;
     @Id
     private String series;
+
+    private String username;
     private String token;
     private LocalDateTime lastUsed;
 }
@@ -450,12 +472,13 @@ private PersistentTokenRepository getJDBCRepository() {
 }
 ```
 
-### Controller Method 접근 제한  
+## Controller Method 접근 제한  
 
 위의 `WebSecurityConfigurerAdapter`의 필터설정 `http.authorizeRequests().antMatchers("...").hasAnyRole("...", "...", ...)` 을 통해서도 접근제한이 가능하지만  
 메서드에 어노테이션을 지정하는 것으로도 접근제한이 가능하다.  
 
-먼저 `WebSecurityConfigurerAdapter` 하위 클래스에 `@EnableGlobalMethodSecurity` 어노테이션 설정, 다른 클래스에서도 시큐리티 어노테이션을 사용할 수 있도록 설정한다.  
+먼저 `WebSecurityConfigurerAdapter` 하위 클래스에 `@EnableGlobalMethodSecurity` 어노테이션 설정,  
+다른 클래스에서도 시큐리티 어노테이션을 사용할 수 있도록 설정한다.  
 
 ```java
 @Log
@@ -483,7 +506,7 @@ public class ManagerController{
 }
 ```
 
-### 패스워드 암호화  
+## 패스워드 암호화  
 
 `PasswordEncoder` 구현객체를 통해 암호화 가능  
 이중 `BCryptPasswordEncoder` 클래스를 통해 단방향 해시 암호화 구현   
@@ -510,7 +533,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 또한 `AuthenticationManagerBuilder` 를 통해 `customSecurityUsersService` 에 `PasswordEncoder` 를 등록한다.   
 `PasswordEncoder`는 다른 서비스에서도 쓰일 수 있음으로 빈객체로 등록.  
 
-#### 회원가입
+> 위에서 설명한 `{bcrypt}$somehash` 형식으로 저장된다. `BCryptPasswordEncoder` 외에도 `Pbkdf2PasswordEncoder` `SCryptPasswordEncoder` `StandardPasswordEncoder` 가 있으며 이를 모두 지원하는 `DelegatingPasswordEncoder` 도 있다.  
+> https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/crypto/password/DelegatingPasswordEncoder.html
+
+
+
+### 회원가입
 
 ```html
 <form method="post">
@@ -549,7 +577,7 @@ public String joinPost(@ModelAttribute("member") Member member) {
 }
 ```
 
-### 로그인 후 페이지 이동  
+## 로그인 후 페이지 이동  
 
 `url` 이동시에 로그인 필터에 걸려 로그인 페이지 이동시에는 상관없다.  
 로그인 완료 후 원래 이동하려는 페이지로 이동한다.  
