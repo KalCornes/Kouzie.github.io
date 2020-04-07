@@ -1,4 +1,4 @@
----
+
 title:  "java String format!"
 read_time: false
 share: false
@@ -11,19 +11,21 @@ categories:
 tags:
   - Java
   - 문법
----
+
 
 ### String format
 
 `java.util`패키지의 `Class Formatter`클래스의 `string`관련 내용에서 관련 내용을 찾을 수 있다.  
 
-```%[argument_index$][flags][width][.precision]conversion```  
+```
+%[argument_index$][flags][width][.precision]conversion
+```  
 
 `[ ]`는 다 생략 가능한것들 생략하고 나면 `%conversion` 하나 남는다  
 `%s`, `%d`와 같은 형식을 `conversion`라 볼수 있다.   
 
 `[width]` 옵션을 사용해보자  
----
+
 ```java
 int age=20;
 System.out.println("[width]도 붙여보자");
@@ -32,11 +34,11 @@ System.out.printf("[%10s], [%10d]\n",name, age);
 ```
 
 결과값  
+
 ```
 [width]도 붙여보자
 [       홀길동], [        20]
 ```
----
 
 `[flag]`옵션을 사용해 보자 
 
@@ -61,7 +63,7 @@ System.out.printf("[%10s], [%010d]\n",name, age); //width만큼 0표시
 [       홀길동], [0000000020]
 ```
 
----
+
 
 `[argument_index$]`옵션을 사용해 보자  
 ```java
